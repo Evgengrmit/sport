@@ -1,0 +1,79 @@
+package console
+
+import (
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"sync"
+)
+import club "sport/sportclubs"
+
+func GetURL() string {
+	urlStr := flag.String("url", "", " url for GET method")
+	flag.Parse()
+	return *urlStr
+}
+func GetComplexes(url string) error {
+	if url == "" {
+		return errors.New("empty url")
+	}
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	req.Header.Set("User-Agent", "test-me")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(res.Body)
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	var complexes []club.SportClub
+
+	err = json.Unmarshal(body, &complexes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		for _, c := range complexes {
+			fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
+		}
+
+	}()
+	go func() {
+		defer wg.Done()
+		data, err := json.MarshalIndent(complexes, "", "")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		err = ioutil.WriteFile("data.json", data, 0644)
+	}()
+	wg.Wait()
+	return nil
+}
