@@ -4,7 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"sport/console"
+	"sport/pkg/handler"
 )
+
+func RunServer() error {
+	h := handler.Handler{}
+	r := h.InitRoutes()
+	return r.Run()
+}
 
 func main() {
 	urlStr := flag.String("url", "", " url for GET method")
