@@ -3,17 +3,26 @@ package sportclubs
 import (
 	"log"
 	"sport/pkg/db"
+	"time"
 )
 
 func (s *SportComplex) CreateNewComplex() {
 	if s.IsComplexExists() {
 		return
 	}
-	_ = db.DB.QueryRow("insert into \"workout_day\" (title, description, scheduled_at) values ($1, $2, $3)")
+	date, err := time.Parse("02/01/06", s.ScheduledAt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	_ = db.DB.QueryRow("INSERT INTO workout_day (title, description, scheduled_at) VALUES ($1, $2, $3)", s.Title, s.Description, date)
 }
 func (s *SportComplex) IsComplexExists() bool {
 	var exists bool
-	err := db.DB.QueryRow("select exists(select * from \"workout_day\" where title= $1 and scheduled_at=$2)", s.Title, s.ScheduledAt).Scan(&exists)
+	date, err := time.Parse("02/01/06", s.ScheduledAt)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	err = db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE title= $1 AND scheduled_at=$2)", s.Title, date).Scan(&exists)
 	if err != nil {
 		log.Println(err.Error())
 	}
