@@ -65,6 +65,9 @@ func AddInDB(filename string) error {
 			log.Println(err.Error())
 		}
 	}
+	//serv := service.Service{repos}
+	//res, err := serv.Complex.GetAllComplexes()
+	//fmt.Println(res)
 	return nil
 }
 

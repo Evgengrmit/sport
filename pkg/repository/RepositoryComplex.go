@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"sport/sportclubs"
 )
@@ -37,7 +39,14 @@ func (c *ComplexPostgres) GetAllComplexes() ([]sportclubs.ComplexJSON, error) {
 	if err != nil {
 		return nil, err
 	}
-	results := make([]sportclubs.ComplexJSON, 0)
+	fmt.Println("dfdfdfd")
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}(rows)
+	var results []sportclubs.ComplexJSON
 	for rows.Next() {
 		compl := sportclubs.ComplexJSON{}
 		err := rows.Scan(&compl.Id, &compl.Title, &compl.ScheduledAt)
@@ -45,6 +54,9 @@ func (c *ComplexPostgres) GetAllComplexes() ([]sportclubs.ComplexJSON, error) {
 			return nil, err
 		}
 		results = append(results, compl)
+	}
+	if err = rows.Err(); err != nil {
+		return results, err
 	}
 	return results, nil
 }
