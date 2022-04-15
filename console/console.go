@@ -10,7 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	club "sport/pkg/sportclubs"
+	"sport/pkg/repository"
+	club "sport/sportclubs"
 	"sync"
 )
 
@@ -25,7 +26,25 @@ func GetFileName() string {
 	return *filename
 }
 func AddInDB(filename string) error {
+	db, err := repository.ConnectPostgresDB(repository.Config{
+		Host:     "localhost",
+		Port:     "5436",
+		Username: "postgres",
+		Password: "qwerty",
+		DBName:   "postgres",
+		SSLMode:  "disable",
+	})
+	if err != nil {
+		log.Fatalf("error occurred when initialization database: %s", err.Error())
+	}
+	repos := repository.NewRepository(db)
 	file, err := os.Open(filename)
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(file)
 	if err != nil {
 		return err
 	}
@@ -40,10 +59,15 @@ func AddInDB(filename string) error {
 		return err
 	}
 	for _, c := range complexes {
-		c.CreateNewComplex()
+		_, err = repos.CreateComplex(c)
+		if err != nil {
+			fmt.Println("fssfd")
+			log.Println(err.Error())
+		}
 	}
 	return nil
 }
+
 func GetComplexes(url string) error {
 	if url == "" {
 		return errors.New("empty url")

@@ -3,9 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"sport/console"
-	"sport/pkg/db"
 )
 
 func main() {
@@ -16,18 +14,7 @@ func main() {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	db.ConnectPostgresDB(db.Config{
-		Host:     "localhost",
-		Port:     "5436",
-		Username: "postgres",
-		Password: "qwerty",
-		DBName:   "postgres",
-		SSLMode:  "disable",
-	})
 
-	if err != nil {
-		log.Fatalf("error occurred when initialization database: %s", err.Error())
-	}
 	err = console.AddInDB(*filename)
 	if err != nil {
 		fmt.Printf(err.Error())
