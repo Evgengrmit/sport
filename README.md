@@ -36,14 +36,14 @@
 
 ## Console commands
 Скачивание JSON
-```azure
+```
 $ go run cmd/download/main.go -url https://crossfit1905.com/index-app.php  
 ```
 Обновление БД
-```azure
+```
 $ go run cmd/database/main.go -file data.json
 ```
 Запуск сервера
-```azure
+```
 $ go run cmd/server/main.go
 ```

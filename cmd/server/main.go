@@ -2,19 +2,26 @@ package main
 
 import (
 	"log"
+	"os"
 	"sport/pkg/handler"
 	"sport/pkg/repository"
 	"sport/pkg/service"
 )
 
 func RunServer() error {
+	host := os.Getenv("HOST")
+	port := os.Getenv("DB_PORT")
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	sslmode := os.Getenv("SSL_MODE")
 	db, err := repository.ConnectPostgresDB(repository.Config{
-		Host:     "localhost",
-		Port:     "5436",
-		Username: "postgres",
-		Password: "qwerty",
-		DBName:   "postgres",
-		SSLMode:  "disable",
+		Host:     host,
+		Port:     port,
+		Username: username,
+		Password: password,
+		DBName:   dbname,
+		SSLMode:  sslmode,
 	})
 	if err != nil {
 		log.Fatalf("error occurred when initialization database: %s", err.Error())

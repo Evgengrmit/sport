@@ -5,9 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"sport/pkg/repository"
@@ -25,55 +23,75 @@ func GetFileName() string {
 	flag.Parse()
 	return *filename
 }
-func AddInDB(filename string) error {
+func AddComplexInDB(complexes []club.SportComplex) error {
+	host := os.Getenv("HOST")
+	port := os.Getenv("DB_PORT")
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	sslmode := os.Getenv("SSL_MODE")
 	db, err := repository.ConnectPostgresDB(repository.Config{
-		Host:     "localhost",
-		Port:     "5436",
-		Username: "postgres",
-		Password: "qwerty",
-		DBName:   "postgres",
-		SSLMode:  "disable",
+		Host:     host,
+		Port:     port,
+		Username: username,
+		Password: password,
+		DBName:   dbname,
+		SSLMode:  sslmode,
 	})
 	if err != nil {
-		log.Fatalf("error occurred when initialization database: %s", err.Error())
+		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())
+		return errors.New(str)
 	}
 	repos := repository.NewRepository(db)
-	file, err := os.Open(filename)
-	defer func(file *os.File) {
-		err := file.Close()
+	for _, c := range complexes {
+		_, err = repos.CreateComplex(c)
 		if err != nil {
-			log.Println(err)
+			return err
 		}
-	}(file)
+	}
+	return nil
+}
+func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
+	file, err := os.Open(filename)
+	defer file.Close()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	body, err := ioutil.ReadAll(file)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var complexes []club.SportComplex
 
 	err = json.Unmarshal(body, &complexes)
 	if err != nil {
+		return nil, err
+	}
+
+	return complexes, nil
+}
+func PrintComplexes(complexes []club.SportComplex, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for _, c := range complexes {
+		fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
+	}
+}
+
+func SaveComplexesInFile(complexes []club.SportComplex) error {
+	data, err := json.MarshalIndent(complexes, "", "")
+	if err != nil {
 		return err
 	}
-	for _, c := range complexes {
-		_, err = repos.CreateComplex(c)
-		if err != nil {
-			fmt.Println("fssfd")
-			log.Println(err.Error())
-		}
+	err = ioutil.WriteFile("data.json", data, 0644)
+	if err != nil {
+		return err
 	}
-	//serv := service.Service{repos}
-	//res, err := serv.Complex.GetAllComplexes()
-	//fmt.Println(res)
 	return nil
 }
 
-func GetComplexes(url string) error {
+func GetComplexesFromURL(url string) ([]club.SportComplex, error) {
 	if url == "" {
-		return errors.New("empty url")
+		return nil, errors.New("empty url")
 	}
 	method := "GET"
 
@@ -81,50 +99,26 @@ func GetComplexes(url string) error {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("User-Agent", "test-me")
 
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}(res.Body)
+	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 
-		return err
+		return nil, err
 	}
 	var complexes []club.SportComplex
 
 	err = json.Unmarshal(body, &complexes)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		for _, c := range complexes {
-			fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
-		}
-
-	}()
-	go func() {
-		defer wg.Done()
-		data, err := json.MarshalIndent(complexes, "", "")
-		if err != nil {
-			log.Fatalln(err)
-		}
-		err = ioutil.WriteFile("data.json", data, 0644)
-	}()
-	wg.Wait()
-	return nil
+	return complexes, nil
 }
