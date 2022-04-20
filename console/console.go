@@ -18,11 +18,33 @@ func GetURL() string {
 	flag.Parse()
 	return *urlStr
 }
+
 func GetFileName() string {
 	filename := flag.String("file", "", "filename to get data from file")
 	flag.Parse()
 	return *filename
 }
+
+func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
+	file, err := os.Open(filename)
+	defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	var complexes []club.SportComplex
+
+	err = json.Unmarshal(body, &complexes)
+	if err != nil {
+		return nil, err
+	}
+
+	return complexes, nil
+}
+
 func AddComplexInDB(complexes []club.SportComplex) error {
 	host := os.Getenv("HOST")
 	port := os.Getenv("DB_PORT")
@@ -51,42 +73,12 @@ func AddComplexInDB(complexes []club.SportComplex) error {
 	}
 	return nil
 }
-func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
-	file, err := os.Open(filename)
-	defer file.Close()
-	if err != nil {
-		return nil, err
-	}
-	body, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	var complexes []club.SportComplex
 
-	err = json.Unmarshal(body, &complexes)
-	if err != nil {
-		return nil, err
-	}
-
-	return complexes, nil
-}
 func PrintComplexes(complexes []club.SportComplex, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for _, c := range complexes {
 		fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
 	}
-}
-
-func SaveComplexesInFile(complexes []club.SportComplex) error {
-	data, err := json.MarshalIndent(complexes, "", "")
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile("data.json", data, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func GetComplexesFromURL(url string) ([]club.SportComplex, error) {
@@ -121,4 +113,16 @@ func GetComplexesFromURL(url string) ([]club.SportComplex, error) {
 		return nil, err
 	}
 	return complexes, nil
+}
+
+func SaveComplexesInFile(complexes []club.SportComplex) error {
+	data, err := json.MarshalIndent(complexes, "", "")
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile("data.json", data, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }

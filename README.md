@@ -31,7 +31,7 @@
 
 При повторном запуске команды комплекс не должен записываться в БД, если такой комплекс уже существует (проверка по title + scheduledAt)
 ## Task 3
-Реализовать ÅPI метод GET /schedules, который должен возвращать информацию в формате:
+Реализовать API метод GET /schedules, который должен возвращать информацию в формате:
 Поля trainer, duration - пока харкодим( будем дорабатывать в рамках других задач)
 
 ## Console commands
@@ -41,9 +41,11 @@ $ go run cmd/download/main.go -url https://crossfit1905.com/index-app.php
 ```
 Обновление БД
 ```
+$ source set_env.sh  
 $ go run cmd/database/main.go -file data.json
 ```
 Запуск сервера
 ```
+$ source set_env.sh  
 $ go run cmd/server/main.go
 ```
