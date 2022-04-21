@@ -46,20 +46,7 @@ func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
 }
 
 func AddComplexInDB(complexes []club.SportComplex) error {
-	host := os.Getenv("HOST")
-	port := os.Getenv("DB_PORT")
-	username := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	sslmode := os.Getenv("SSL_MODE")
-	db, err := repository.ConnectPostgresDB(repository.Config{
-		Host:     host,
-		Port:     port,
-		Username: username,
-		Password: password,
-		DBName:   dbname,
-		SSLMode:  sslmode,
-	})
+	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())
 		return errors.New(str)
