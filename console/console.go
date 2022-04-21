@@ -10,7 +10,6 @@ import (
 	"os"
 	"sport/pkg/repository"
 	club "sport/sportclubs"
-	"sync"
 )
 
 func GetURL() string {
@@ -61,8 +60,7 @@ func AddComplexInDB(complexes []club.SportComplex) error {
 	return nil
 }
 
-func PrintComplexes(complexes []club.SportComplex, wg *sync.WaitGroup) {
-	defer wg.Done()
+func PrintComplexes(complexes []club.SportComplex) {
 	for _, c := range complexes {
 		fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
 	}
@@ -108,6 +106,30 @@ func SaveComplexesInFile(complexes []club.SportComplex) error {
 		return err
 	}
 	err = ioutil.WriteFile("data.json", data, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DownloadData(url string) ([]club.SportComplex, error) {
+	cmplxs, err := GetComplexesFromURL(url)
+	if err != nil {
+		return nil, err
+	}
+	err = SaveComplexesInFile(cmplxs)
+	if err != nil {
+		return nil, err
+	}
+	return cmplxs, nil
+}
+
+func UploadData(filename string) error {
+	cmplxs, err := GetComplexFromFile(filename)
+	if err != nil {
+		return err
+	}
+	err = AddComplexInDB(cmplxs)
 	if err != nil {
 		return err
 	}

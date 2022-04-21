@@ -1,25 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"sport/console"
-	"sync"
 )
 
 func main() {
 	urlStr := console.GetURL()
-	cmplxs, err := console.GetComplexesFromURL(urlStr)
+	cmplxs, err := console.DownloadData(urlStr)
 	if err != nil {
-		fmt.Printf(err.Error())
-		return
+		log.Fatalln(err.Error())
 	}
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go console.PrintComplexes(cmplxs, wg)
-	err = console.SaveComplexesInFile(cmplxs)
-	if err != nil {
-		fmt.Printf(err.Error())
-		return
-	}
-	wg.Wait()
+	console.PrintComplexes(cmplxs)
+
 }

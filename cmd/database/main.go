@@ -1,21 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"sport/console"
 )
 
 func main() {
 	filename := console.GetFileName()
-
-	cmplxs, err := console.GetComplexFromFile(filename)
+	err := console.UploadData(filename)
 	if err != nil {
-		fmt.Printf(err.Error())
-		return
-	}
-	err = console.AddComplexInDB(cmplxs)
-	if err != nil {
-		fmt.Printf(err.Error())
+		log.Fatalln(err.Error())
 	}
 
 }
