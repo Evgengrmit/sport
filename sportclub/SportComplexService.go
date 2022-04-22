@@ -1,4 +1,4 @@
-package sportclubs
+package sportclub
 
 import (
 	"log"

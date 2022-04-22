@@ -2,16 +2,16 @@ package service
 
 import (
 	"sport/pkg/repository"
-	"sport/sportclubs"
+	"sport/sportclub"
 )
 
 type Service struct {
 	Complex
 }
 type Complex interface {
-	GetAllComplexes() ([]sportclubs.ComplexJSON, error)
-	//CreateComplex(s sportclubs.SportComplex) (int, error)
-	//IsComplexExists(s sportclubs.SportComplex) bool
+	GetAllComplexes() ([]sportclub.ComplexJSON, error)
+	//CreateComplex(s sportclub.SportComplex) (int, error)
+	//IsComplexExists(s sportclub.SportComplex) bool
 }
 
 func NewService(repos *repository.Repository) *Service {

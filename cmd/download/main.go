@@ -7,7 +7,7 @@ import (
 
 func main() {
 	urlStr := console.GetURL()
-	cmplxs, err := console.DownloadData(urlStr)
+	cmplxs, err := console.DownloadComplexes(urlStr)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

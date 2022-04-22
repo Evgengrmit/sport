@@ -2,7 +2,7 @@ package service
 
 import (
 	"sport/pkg/repository"
-	"sport/sportclubs"
+	"sport/sportclub"
 )
 
 type ComplexService struct {
@@ -13,6 +13,6 @@ func NewComplexService(repo repository.Complex) *ComplexService {
 	return &ComplexService{repo: repo}
 }
 
-func (c *ComplexService) GetAllComplexes() ([]sportclubs.ComplexJSON, error) {
+func (c *ComplexService) GetAllComplexes() ([]sportclub.ComplexJSON, error) {
 	return c.repo.GetAllComplexes()
 }

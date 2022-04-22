@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	club "sport/sportclubs"
+	club "sport/sportclub"
 )
 
 func GetURL() string {
@@ -68,7 +68,7 @@ func PrintComplexes(complexes []club.SportComplex) {
 	}
 }
 
-func DownloadData(url string) ([]club.SportComplex, error) {
+func DownloadComplexes(url string) ([]club.SportComplex, error) {
 	cmplxs, err := GetComplexesFromURL(url)
 	if err != nil {
 		return nil, errors.New("download data: " + err.Error())

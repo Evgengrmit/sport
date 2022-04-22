@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sport/pkg/repository"
-	club "sport/sportclubs"
+	club "sport/sportclub"
 )
 
 func GetFileName() string {
@@ -53,7 +53,7 @@ func AddComplexInDB(complexes []club.SportComplex) error {
 	return nil
 }
 
-func UploadData(filename string) error {
+func UploadComplexes(filename string) error {
 	cmplxs, err := GetComplexFromFile(filename)
 	if err != nil {
 		return errors.New("upload data: " + err.Error())

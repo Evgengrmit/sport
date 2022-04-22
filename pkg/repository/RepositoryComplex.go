@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"sport/sportclubs"
+	"sport/sportclub"
 )
 
 type ComplexPostgres struct {
@@ -14,7 +14,7 @@ type ComplexPostgres struct {
 func NewComplexPostgres(db *sqlx.DB) *ComplexPostgres {
 	return &ComplexPostgres{db: db}
 }
-func (c *ComplexPostgres) CreateComplex(s sportclubs.SportComplex) (int, error) {
+func (c *ComplexPostgres) CreateComplex(s sportclub.SportComplex) (int, error) {
 	if status, err := c.IsComplexExists(s); status || err != nil {
 		return 0, err
 	}
@@ -27,14 +27,14 @@ func (c *ComplexPostgres) CreateComplex(s sportclubs.SportComplex) (int, error) 
 	}
 	return id, nil
 }
-func (c *ComplexPostgres) IsComplexExists(s sportclubs.SportComplex) (bool, error) {
+func (c *ComplexPostgres) IsComplexExists(s sportclub.SportComplex) (bool, error) {
 	var exists bool
 	title, _, date := s.GetData()
 	err := c.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE title= $1 AND scheduled_at=$2)",
 		title, date).Scan(&exists)
 	return exists, err
 }
-func (c *ComplexPostgres) GetAllComplexes() ([]sportclubs.ComplexJSON, error) {
+func (c *ComplexPostgres) GetAllComplexes() ([]sportclub.ComplexJSON, error) {
 	rows, err := c.db.DB.Query("SELECT  id,title,scheduled_at FROM workout_day")
 	if err != nil {
 		return nil, err
@@ -46,9 +46,9 @@ func (c *ComplexPostgres) GetAllComplexes() ([]sportclubs.ComplexJSON, error) {
 			fmt.Println(err.Error())
 		}
 	}(rows)
-	var results []sportclubs.ComplexJSON
+	var results []sportclub.ComplexJSON
 	for rows.Next() {
-		compl := sportclubs.ComplexJSON{}
+		compl := sportclub.ComplexJSON{}
 		err := rows.Scan(&compl.Id, &compl.Title, &compl.ScheduledAt)
 		if err != nil {
 			return nil, err

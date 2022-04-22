@@ -1,9 +1,9 @@
 package handler
 
-import "sport/sportclubs"
+import "sport/sportclub"
 
 type getAllComplexResponse struct {
-	Data []sportclubs.ComplexJSON `json:"data"`
+	Data []sportclub.ComplexJSON `json:"data"`
 }
 
 type statusResponse struct {
