@@ -7,13 +7,16 @@ import (
 
 type Service struct {
 	Complex
+	Schedule
 }
 type Complex interface {
 	GetAllComplexes() ([]sportclub.ComplexJSON, error)
-	//CreateComplex(s sportclub.SportComplex) (int, error)
-	//IsComplexExists(s sportclub.SportComplex) bool
+}
+type Schedule interface {
+	GetAllSchedules() ([]sportclub.ScheduleJSON, error)
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{Complex: NewComplexService(repos.Complex)}
+	return &Service{Complex: NewComplexService(repos.Complex),
+		Schedule: NewScheduleService(repos.Schedule)}
 }

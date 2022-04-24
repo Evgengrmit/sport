@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (s *SportComplex) GetData() (string, string, time.Time) {
+func (s *Complex) GetData() (string, string, time.Time) {
 	date, err := time.Parse("02/01/06", s.ScheduledAt)
 	if err != nil {
 		log.Println(err.Error())

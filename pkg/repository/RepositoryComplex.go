@@ -14,7 +14,7 @@ type ComplexPostgres struct {
 func NewComplexPostgres(db *sqlx.DB) *ComplexPostgres {
 	return &ComplexPostgres{db: db}
 }
-func (c *ComplexPostgres) CreateComplex(s sportclub.SportComplex) (int, error) {
+func (c *ComplexPostgres) CreateComplex(s sportclub.Complex) (int, error) {
 	if status, err := c.IsComplexExists(s); status || err != nil {
 		return 0, err
 	}
@@ -27,7 +27,7 @@ func (c *ComplexPostgres) CreateComplex(s sportclub.SportComplex) (int, error) {
 	}
 	return id, nil
 }
-func (c *ComplexPostgres) IsComplexExists(s sportclub.SportComplex) (bool, error) {
+func (c *ComplexPostgres) IsComplexExists(s sportclub.Complex) (bool, error) {
 	var exists bool
 	title, _, date := s.GetData()
 	err := c.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE title= $1 AND scheduled_at=$2)",

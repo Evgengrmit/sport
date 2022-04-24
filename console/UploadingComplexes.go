@@ -17,7 +17,7 @@ func GetFileName() string {
 	return *filename
 }
 
-func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
+func GetComplexFromFile(filename string) ([]club.Complex, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
@@ -27,7 +27,7 @@ func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
 	if err != nil {
 		return nil, err
 	}
-	var complexes []club.SportComplex
+	var complexes []club.Complex
 
 	err = json.Unmarshal(body, &complexes)
 	if err != nil {
@@ -37,7 +37,7 @@ func GetComplexFromFile(filename string) ([]club.SportComplex, error) {
 	return complexes, nil
 }
 
-func AddComplexInDB(complexes []club.SportComplex) error {
+func AddComplexInDB(complexes []club.Complex) error {
 	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())

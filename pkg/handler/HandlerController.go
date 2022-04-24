@@ -7,6 +7,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	schedules := router.Group("/schedules")
 	{
 		schedules.GET("/", h.GetAllComplexes)
+		schedules.GET("/1/", h.GetAllSchedules)
 	}
 	return router
 }
