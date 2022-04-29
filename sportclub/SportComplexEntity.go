@@ -7,7 +7,6 @@ type Complex struct {
 	ScheduledAt string `json:"scheduledAt"`
 	Description string `json:"description"`
 }
-
 type ComplexJSON struct {
 	Duration    time.Duration `json:"duration"`
 	Id          int           `json:"id"`

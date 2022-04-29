@@ -35,17 +35,20 @@
 Поля trainer, duration - пока харкодим( будем дорабатывать в рамках других задач)
 
 ## Console commands
-Скачивание JSON
-```
-$ go run cmd/download/main.go -url https://crossfit1905.com/index-app.php  
-```
-Обновление БД
-```
-$ source set_env.sh  
-$ go run cmd/database/main.go -file data.json
-```
+Скачивание данных комплексов:
+`go run cmd/complex/download/main.go --url=https://crossfit1905.com/index-app.php`
+
+Пример запуска через docker-compose:
+`docker-compose -f docker-compose.prod.yml exec backend go run cmd/complex/download/main.go --url=https://crossfit1905.com/index-app.php`
+
+Запись комплексов в БД:
+`go run cmd/complex/database/main.go --file=complexes.json`
+
 Запуск сервера
 ```
 $ source set_env.sh  
 $ go run cmd/server/main.go
 ```
+
+Применение миграций через docker-compose:
+`docker-compose -f docker-compose.prod.yml up migrate-up`
