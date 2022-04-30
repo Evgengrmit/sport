@@ -2,15 +2,15 @@ package repository
 
 import "github.com/jmoiron/sqlx"
 
-type TrainerPostgres struct {
+type TrainerRepository struct {
 	db *sqlx.DB
 }
 
-func NewTrainerPostgres(db *sqlx.DB) *TrainerPostgres {
-	return &TrainerPostgres{db: db}
+func NewTrainerRepository(db *sqlx.DB) *TrainerRepository {
+	return &TrainerRepository{db: db}
 }
 
-func (t *TrainerPostgres) GetTrainerID(trainerName string) (int, bool) {
+func (t *TrainerRepository) GetTrainerID(trainerName string) (int, bool) {
 	exists, _ := t.IsTrainerExists(trainerName)
 	if !exists {
 		return 0, exists
@@ -21,7 +21,7 @@ func (t *TrainerPostgres) GetTrainerID(trainerName string) (int, bool) {
 		trainerName).Scan(&id)
 	return id, exists
 }
-func (t *TrainerPostgres) CreateTrainer(trainerName, trainerPic string) (int, error) {
+func (t *TrainerRepository) CreateTrainer(trainerName, trainerPic string) (int, error) {
 	if status, err := t.IsTrainerExists(trainerName); status || err != nil {
 		return 0, err
 	}
@@ -30,7 +30,7 @@ func (t *TrainerPostgres) CreateTrainer(trainerName, trainerPic string) (int, er
 		trainerName, trainerPic).Scan(&id)
 	return id, err
 }
-func (t *TrainerPostgres) IsTrainerExists(trainerName string) (bool, error) {
+func (t *TrainerRepository) IsTrainerExists(trainerName string) (bool, error) {
 	var exists bool
 	err := t.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM trainer WHERE name= $1 )",
 		trainerName).Scan(&exists)

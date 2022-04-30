@@ -7,15 +7,15 @@ import (
 	"sport/sportclub"
 )
 
-type ComplexPostgres struct {
+type WorkoutDayRepository struct {
 	db *sqlx.DB
 }
 
-func NewComplexPostgres(db *sqlx.DB) *ComplexPostgres {
-	return &ComplexPostgres{db: db}
+func NewWorkoutDayRepository(db *sqlx.DB) *WorkoutDayRepository {
+	return &WorkoutDayRepository{db: db}
 }
-func (c *ComplexPostgres) CreateComplex(s sportclub.Complex) (int, error) {
-	if status, err := c.IsComplexExists(s); status || err != nil {
+func (c *WorkoutDayRepository) CreateWorkoutDay(s sportclub.Complex) (int, error) {
+	if status, err := c.IsWorkoutDayExists(s); status || err != nil {
 		return 0, err
 	}
 	title, description, date := s.GetData()
@@ -27,14 +27,14 @@ func (c *ComplexPostgres) CreateComplex(s sportclub.Complex) (int, error) {
 	}
 	return id, nil
 }
-func (c *ComplexPostgres) IsComplexExists(s sportclub.Complex) (bool, error) {
+func (c *WorkoutDayRepository) IsWorkoutDayExists(s sportclub.Complex) (bool, error) {
 	var exists bool
 	title, _, date := s.GetData()
 	err := c.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE title= $1 AND scheduled_at=$2)",
 		title, date).Scan(&exists)
 	return exists, err
 }
-func (c *ComplexPostgres) GetAllComplexes() ([]sportclub.ComplexJSON, error) {
+func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]sportclub.ComplexJSON, error) {
 	rows, err := c.db.DB.Query("SELECT  id,title,scheduled_at FROM workout_day")
 	if err != nil {
 		return nil, err

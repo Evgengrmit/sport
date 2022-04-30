@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func (h *Handler) GetAllComplexes(c *gin.Context) {
-	complexes, err := h.services.Complex.GetAllComplexes()
+func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
+	complexes, err := h.services.WorkoutDay.GetAllWorkoutDays()
 
 	if err != nil {
 		NewErrorResponse(c, http.StatusBadRequest, err.Error())

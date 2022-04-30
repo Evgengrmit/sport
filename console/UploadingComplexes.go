@@ -45,7 +45,7 @@ func AddComplexInDB(complexes []club.Complex) error {
 	}
 	repos := repository.NewRepository(db)
 	for _, c := range complexes {
-		_, err = repos.CreateComplex(c)
+		_, err = repos.CreateWorkoutDay(c)
 		if err != nil {
 			return errors.New("add complexes: " + err.Error())
 		}

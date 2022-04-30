@@ -6,13 +6,13 @@ import (
 )
 
 type Repository struct {
-	Complex
+	WorkoutDay
 	Schedule
 }
-type Complex interface {
-	GetAllComplexes() ([]sportclub.ComplexJSON, error)
-	CreateComplex(s sportclub.Complex) (int, error)
-	IsComplexExists(s sportclub.Complex) (bool, error)
+type WorkoutDay interface {
+	GetAllWorkoutDays() ([]sportclub.ComplexJSON, error)
+	CreateWorkoutDay(s sportclub.Complex) (int, error)
+	IsWorkoutDayExists(s sportclub.Complex) (bool, error)
 }
 
 type Schedule interface {
@@ -29,7 +29,7 @@ type Trainer interface {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Complex:  NewComplexPostgres(db),
-		Schedule: NewSchedulePostgres(db),
+		WorkoutDay: NewWorkoutDayRepository(db),
+		Schedule:   NewSchedulePostgres(db),
 	}
 }

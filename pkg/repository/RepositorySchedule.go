@@ -44,7 +44,7 @@ func (s *SchedulePostgres) CreateSchedule(sch sportclub.ScheduleJSON) (int, erro
 	if status, err := s.IsScheduleExists(sch); status || err != nil {
 		return 0, err
 	}
-	trainer := NewTrainerPostgres(s.db)
+	trainer := NewTrainerRepository(s.db)
 	trainerID, exists := trainer.GetTrainerID(sch.TrainerName)
 	var id int
 	if exists {
