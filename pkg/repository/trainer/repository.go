@@ -1,10 +1,6 @@
-package repository
+package trainer
 
 import "github.com/jmoiron/sqlx"
-
-type TrainerRepository struct {
-	db *sqlx.DB
-}
 
 func NewTrainerRepository(db *sqlx.DB) *TrainerRepository {
 	return &TrainerRepository{db: db}

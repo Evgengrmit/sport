@@ -7,7 +7,7 @@ import (
 
 func main() {
 	filename := console.GetFileName()
-	err := console.UploadComplexes(filename)
+	err := console.UploadWorkoutDays(filename)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

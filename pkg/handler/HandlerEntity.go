@@ -1,23 +1,24 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"log"
 	"sport/pkg/service"
+	"sport/sportclub/schedules"
+	"sport/sportclub/wod"
 )
 
 type Handler struct {
 	services *service.Service
 }
+
+type statusResponse struct {
+	Status string `json:"status"`
+}
 type errorResponse struct {
 	Message string `json:"message"`
 }
-
-func NewHandler(serv *service.Service) *Handler {
-	return &Handler{services: serv}
+type getAllWorkoutDaysResponse struct {
+	Data []wod.WorkoutDayJSON `json:"data"`
 }
-
-func NewErrorResponse(c *gin.Context, statusCode int, message string) {
-	log.Println(message)
-	c.AbortWithStatusJSON(statusCode, errorResponse{message})
+type getAllSchedulesResponse struct {
+	Data []schedules.ScheduleJSON `json:"data"`
 }

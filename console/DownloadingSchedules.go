@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	club "sport/sportclub"
+	club "sport/sportclub/schedules"
 )
 
 func GetSchedulesFromURL(url string) ([]club.Schedule, error) {

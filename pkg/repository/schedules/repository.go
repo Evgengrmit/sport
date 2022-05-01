@@ -1,21 +1,18 @@
-package repository
+package schedules
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"sport/sportclub"
+	"sport/pkg/repository/trainer"
+	"sport/sportclub/schedules"
 )
 
-type SchedulePostgres struct {
-	db *sqlx.DB
+func NewScheduleRepository(db *sqlx.DB) *ScheduleRepository {
+	return &ScheduleRepository{db: db}
 }
-
-func NewSchedulePostgres(db *sqlx.DB) *SchedulePostgres {
-	return &SchedulePostgres{db: db}
-}
-func (s *SchedulePostgres) GetAllSchedules() ([]sportclub.ScheduleJSON, error) {
+func (s *ScheduleRepository) GetAllSchedules() ([]schedules.ScheduleJSON, error) {
 	rows, err := s.db.DB.Query("SELECT  s.id,s.name,s.scheduled_at,t.name,t.avatar_url FROM schedule s JOIN trainer t on t.id = s.trainer_id")
 	if err != nil {
 		return nil, err
@@ -26,9 +23,9 @@ func (s *SchedulePostgres) GetAllSchedules() ([]sportclub.ScheduleJSON, error) {
 			fmt.Println(err.Error())
 		}
 	}(rows)
-	var results []sportclub.ScheduleJSON
+	var results []schedules.ScheduleJSON
 	for rows.Next() {
-		sch := sportclub.ScheduleJSON{}
+		sch := schedules.ScheduleJSON{}
 		err := rows.Scan(&sch.ID, &sch.Name, &sch.ScheduledAt, &sch.TrainerName, &sch.TrainerPic)
 		if err != nil {
 			return nil, err
@@ -40,11 +37,11 @@ func (s *SchedulePostgres) GetAllSchedules() ([]sportclub.ScheduleJSON, error) {
 	}
 	return results, nil
 }
-func (s *SchedulePostgres) CreateSchedule(sch sportclub.ScheduleJSON) (int, error) {
+func (s *ScheduleRepository) CreateSchedule(sch schedules.ScheduleJSON) (int, error) {
 	if status, err := s.IsScheduleExists(sch); status || err != nil {
 		return 0, err
 	}
-	trainer := NewTrainerRepository(s.db)
+	trainer := trainer.NewTrainerRepository(s.db)
 	trainerID, exists := trainer.GetTrainerID(sch.TrainerName)
 	var id int
 	if exists {
@@ -72,7 +69,7 @@ func (s *SchedulePostgres) CreateSchedule(sch sportclub.ScheduleJSON) (int, erro
 	}
 	return id, nil
 }
-func (s *SchedulePostgres) IsScheduleExists(sch sportclub.ScheduleJSON) (bool, error) {
+func (s *ScheduleRepository) IsScheduleExists(sch schedules.ScheduleJSON) (bool, error) {
 	var exists bool
 	err := s.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM schedule WHERE name= $1 AND scheduled_at=$2)",
 		sch.Name, sch.ScheduledAt).Scan(&exists)

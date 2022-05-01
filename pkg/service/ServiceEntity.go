@@ -2,21 +2,16 @@ package service
 
 import (
 	"sport/pkg/repository"
-	"sport/sportclub"
+	"sport/pkg/service/schedules"
+	"sport/pkg/service/wod"
 )
 
 type Service struct {
-	WorkoutDay
-	Schedule
-}
-type WorkoutDay interface {
-	GetAllWorkoutDays() ([]sportclub.ComplexJSON, error)
-}
-type Schedule interface {
-	GetAllSchedules() ([]sportclub.ScheduleJSON, error)
+	wod.WorkoutDay
+	schedules.Schedule
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{WorkoutDay: NewWorkoutDayService(repos.WorkoutDay),
-		Schedule: NewScheduleService(repos.Schedule)}
+	return &Service{WorkoutDay: wod.NewWorkoutDayService(repos.WorkoutDay),
+		Schedule: schedules.NewScheduleService(repos.Schedule)}
 }

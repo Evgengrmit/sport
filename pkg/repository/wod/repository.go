@@ -1,20 +1,16 @@
-package repository
+package wod
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"sport/sportclub"
+	"sport/sportclub/wod"
 )
-
-type WorkoutDayRepository struct {
-	db *sqlx.DB
-}
 
 func NewWorkoutDayRepository(db *sqlx.DB) *WorkoutDayRepository {
 	return &WorkoutDayRepository{db: db}
 }
-func (c *WorkoutDayRepository) CreateWorkoutDay(s sportclub.Complex) (int, error) {
+func (c *WorkoutDayRepository) CreateWorkoutDay(s wod.WorkoutDay) (int, error) {
 	if status, err := c.IsWorkoutDayExists(s); status || err != nil {
 		return 0, err
 	}
@@ -27,14 +23,14 @@ func (c *WorkoutDayRepository) CreateWorkoutDay(s sportclub.Complex) (int, error
 	}
 	return id, nil
 }
-func (c *WorkoutDayRepository) IsWorkoutDayExists(s sportclub.Complex) (bool, error) {
+func (c *WorkoutDayRepository) IsWorkoutDayExists(s wod.WorkoutDay) (bool, error) {
 	var exists bool
 	title, _, date := s.GetData()
 	err := c.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE title= $1 AND scheduled_at=$2)",
 		title, date).Scan(&exists)
 	return exists, err
 }
-func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]sportclub.ComplexJSON, error) {
+func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]wod.WorkoutDayJSON, error) {
 	rows, err := c.db.DB.Query("SELECT  id,title,scheduled_at FROM workout_day")
 	if err != nil {
 		return nil, err
@@ -46,9 +42,9 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]sportclub.ComplexJSON, err
 			fmt.Println(err.Error())
 		}
 	}(rows)
-	var results []sportclub.ComplexJSON
+	var results []wod.WorkoutDayJSON
 	for rows.Next() {
-		compl := sportclub.ComplexJSON{}
+		compl := wod.WorkoutDayJSON{}
 		err := rows.Scan(&compl.Id, &compl.Title, &compl.ScheduledAt)
 		if err != nil {
 			return nil, err
@@ -59,4 +55,7 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]sportclub.ComplexJSON, err
 		return results, err
 	}
 	return results, nil
+}
+func (c *WorkoutDayRepository) GetWorkoutDaysByDays() (map[string][]wod.WorkoutDayJSON, error) {
+	return nil, nil
 }

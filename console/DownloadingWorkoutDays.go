@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	club "sport/sportclub"
+	"sport/sportclub/wod"
 )
 
 func GetURL() string {
@@ -36,46 +36,46 @@ func GetDataFromUrl(url string) ([]byte, error) {
 	defer res.Body.Close()
 	return ioutil.ReadAll(res.Body)
 }
-func GetComplexesFromURL(url string) ([]club.Complex, error) {
+func GetWorkoutDaysFromURL(url string) ([]wod.WorkoutDay, error) {
 	body, err := GetDataFromUrl(url)
 	if err != nil {
 		return nil, err
 	}
-	var complexes []club.Complex
+	var workoutDays []wod.WorkoutDay
 
-	err = json.Unmarshal(body, &complexes)
+	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
 		return nil, err
 	}
-	return complexes, nil
+	return workoutDays, nil
 }
 
-func SaveComplexesInFile(complexes []club.Complex) error {
-	data, err := json.MarshalIndent(complexes, "", "")
+func SaveWorkoutDaysInFile(workoutDays []wod.WorkoutDay) error {
+	data, err := json.MarshalIndent(workoutDays, "", "")
 	if err != nil {
-		return errors.New("save complexes: " + err.Error())
+		return errors.New("save workoutDays: " + err.Error())
 	}
-	err = ioutil.WriteFile("complexes.json", data, 0644)
+	err = ioutil.WriteFile("workoutDays.json", data, 0644)
 	if err != nil {
-		return errors.New("save complexes: " + err.Error())
+		return errors.New("save workoutDays: " + err.Error())
 	}
 	return nil
 }
 
-func PrintComplexes(complexes []club.Complex) {
-	for _, c := range complexes {
-		fmt.Printf("%s %s \n", c.Title, c.ScheduledAt)
+func PrintWorkoutDays(workoutDays []wod.WorkoutDay) {
+	for _, d := range workoutDays {
+		fmt.Printf("%s %s \n", d.Title, d.ScheduledAt)
 	}
 }
 
-func DownloadComplexes(url string) ([]club.Complex, error) {
-	cmplxs, err := GetComplexesFromURL(url)
+func DownloadWorkoutDays(url string) ([]wod.WorkoutDay, error) {
+	wods, err := GetWorkoutDaysFromURL(url)
 	if err != nil {
 		return nil, errors.New("download data: " + err.Error())
 	}
-	err = SaveComplexesInFile(cmplxs)
+	err = SaveWorkoutDaysInFile(wods)
 	if err != nil {
 		return nil, errors.New("download data: " + err.Error())
 	}
-	return cmplxs, nil
+	return wods, nil
 }

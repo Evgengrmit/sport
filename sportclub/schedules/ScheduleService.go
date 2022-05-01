@@ -1,4 +1,4 @@
-package sportclub
+package schedules
 
 import (
 	"time"

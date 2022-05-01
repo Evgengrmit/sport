@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sport/pkg/repository"
-	club "sport/sportclub"
+	"sport/sportclub/wod"
 )
 
 func GetFileName() string {
@@ -17,7 +17,7 @@ func GetFileName() string {
 	return *filename
 }
 
-func GetComplexFromFile(filename string) ([]club.Complex, error) {
+func GetWorkoutDaysFromFile(filename string) ([]wod.WorkoutDay, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
@@ -27,38 +27,38 @@ func GetComplexFromFile(filename string) ([]club.Complex, error) {
 	if err != nil {
 		return nil, err
 	}
-	var complexes []club.Complex
+	var workoutDays []wod.WorkoutDay
 
-	err = json.Unmarshal(body, &complexes)
+	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
 		return nil, err
 	}
 
-	return complexes, nil
+	return workoutDays, nil
 }
 
-func AddComplexInDB(complexes []club.Complex) error {
+func AddWorkoutDaysInDB(workoutDays []wod.WorkoutDay) error {
 	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())
 		return errors.New(str)
 	}
 	repos := repository.NewRepository(db)
-	for _, c := range complexes {
+	for _, c := range workoutDays {
 		_, err = repos.CreateWorkoutDay(c)
 		if err != nil {
-			return errors.New("add complexes: " + err.Error())
+			return errors.New("add workoutDays: " + err.Error())
 		}
 	}
 	return nil
 }
 
-func UploadComplexes(filename string) error {
-	cmplxs, err := GetComplexFromFile(filename)
+func UploadWorkoutDays(filename string) error {
+	workoutDaysFromFile, err := GetWorkoutDaysFromFile(filename)
 	if err != nil {
 		return errors.New("upload data: " + err.Error())
 	}
-	err = AddComplexInDB(cmplxs)
+	err = AddWorkoutDaysInDB(workoutDaysFromFile)
 	if err != nil {
 		return errors.New("upload data: " + err.Error())
 	}

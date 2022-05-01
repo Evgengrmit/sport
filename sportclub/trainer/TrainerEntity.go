@@ -1,4 +1,4 @@
-package sportclub
+package trainer
 
 type Trainer struct {
 	Avatar string `json:"avatar"`
