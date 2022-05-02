@@ -13,5 +13,5 @@ func (c *WorkoutDayService) GetAllWorkoutDays() ([]wod2.WorkoutDayJSON, error) {
 	return c.repo.GetAllWorkoutDays()
 }
 func (c *WorkoutDayService) GetWorkoutDaysByDays() (map[string][]wod2.WorkoutDayJSON, error) {
-	return nil, nil
+	return c.repo.GetWorkoutDaysByDays()
 }

@@ -57,5 +57,21 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]wod.WorkoutDayJSON, error)
 	return results, nil
 }
 func (c *WorkoutDayRepository) GetWorkoutDaysByDays() (map[string][]wod.WorkoutDayJSON, error) {
-	return nil, nil
+	results, err := c.GetAllWorkoutDays()
+	if err != nil {
+		return nil, err
+	}
+	workoutDaysByDay := make(map[string][]wod.WorkoutDayJSON)
+	for _, res := range results {
+		weekDay := res.ScheduledAt.Weekday().String()
+		if _, ok := workoutDaysByDay[weekDay]; ok {
+			workoutDaysByDay[weekDay] = append(workoutDaysByDay[weekDay], res)
+		} else {
+			massiveOfWod := make([]wod.WorkoutDayJSON, 0)
+			massiveOfWod = append(massiveOfWod, res)
+			workoutDaysByDay[weekDay] = massiveOfWod
+		}
+
+	}
+	return workoutDaysByDay, nil
 }

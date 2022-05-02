@@ -25,6 +25,14 @@ func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, getAllWorkoutDaysResponse{Data: complexes})
 }
+func (h *Handler) GetWorkoutDaysByDays(c *gin.Context) {
+	workoutDaysByDay, err := h.services.WorkoutDay.GetWorkoutDaysByDays()
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": workoutDaysByDay})
+}
 
 func (h *Handler) GetAllSchedules(c *gin.Context) {
 	schedules, err := h.services.Schedule.GetAllSchedules()
@@ -34,7 +42,4 @@ func (h *Handler) GetAllSchedules(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, getAllSchedulesResponse{Data: schedules})
-}
-func (h *Handler) GetWorkoutDaysByDays(c *gin.Context) {
-
 }
