@@ -1,4 +1,4 @@
-package trainer
+package trainerRepo
 
 import "github.com/jmoiron/sqlx"
 

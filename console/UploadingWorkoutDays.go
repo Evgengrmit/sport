@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sport/pkg/repository"
-	"sport/sportclub/wod"
+	"sport/pkg/repository/wodRepo"
 )
 
 func GetFileName() string {
@@ -17,7 +17,7 @@ func GetFileName() string {
 	return *filename
 }
 
-func GetWorkoutDaysFromFile(filename string) ([]wod.WorkoutDay, error) {
+func GetWorkoutDaysFromFile(filename string) ([]workoutDay, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
@@ -27,7 +27,7 @@ func GetWorkoutDaysFromFile(filename string) ([]wod.WorkoutDay, error) {
 	if err != nil {
 		return nil, err
 	}
-	var workoutDays []wod.WorkoutDay
+	var workoutDays []workoutDay
 
 	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
@@ -37,7 +37,7 @@ func GetWorkoutDaysFromFile(filename string) ([]wod.WorkoutDay, error) {
 	return workoutDays, nil
 }
 
-func AddWorkoutDaysInDB(workoutDays []wod.WorkoutDay) error {
+func AddWorkoutDaysInDB(workoutDays []workoutDay) error {
 	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())
@@ -45,7 +45,9 @@ func AddWorkoutDaysInDB(workoutDays []wod.WorkoutDay) error {
 	}
 	repos := repository.NewRepository(db)
 	for _, c := range workoutDays {
-		_, err = repos.CreateWorkoutDay(c)
+		title, description, date := c.GetData()
+		workoutDay := wodRepo.WorkoutDay{Title: title, Description: description, ScheduledAt: date}
+		_, err = repos.CreateWorkoutDay(workoutDay)
 		if err != nil {
 			return errors.New("add workoutDays: " + err.Error())
 		}

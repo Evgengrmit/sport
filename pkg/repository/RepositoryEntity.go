@@ -2,18 +2,18 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
-	"sport/pkg/repository/schedules"
-	"sport/pkg/repository/wod"
+	"sport/pkg/repository/schedulesRepo"
+	"sport/pkg/repository/wodRepo"
 )
 
 type Repository struct {
-	wod.WorkoutDay
-	schedules.Schedule
+	wodRepo.WorkoutDayRepo
+	schedulesRepo.ScheduleRepo
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		WorkoutDay: wod.NewWorkoutDayRepository(db),
-		Schedule:   schedules.NewScheduleRepository(db),
+		WorkoutDayRepo: wodRepo.NewWorkoutDayRepository(db),
+		ScheduleRepo:   schedulesRepo.NewScheduleRepository(db),
 	}
 }

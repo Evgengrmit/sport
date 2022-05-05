@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sport/sportclub/wod"
 )
 
 func GetURL() string {
@@ -36,12 +35,12 @@ func GetDataFromUrl(url string) ([]byte, error) {
 	defer res.Body.Close()
 	return ioutil.ReadAll(res.Body)
 }
-func GetWorkoutDaysFromURL(url string) ([]wod.WorkoutDay, error) {
+func GetWorkoutDaysFromURL(url string) ([]workoutDay, error) {
 	body, err := GetDataFromUrl(url)
 	if err != nil {
 		return nil, err
 	}
-	var workoutDays []wod.WorkoutDay
+	var workoutDays []workoutDay
 
 	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
@@ -50,7 +49,7 @@ func GetWorkoutDaysFromURL(url string) ([]wod.WorkoutDay, error) {
 	return workoutDays, nil
 }
 
-func SaveWorkoutDaysInFile(workoutDays []wod.WorkoutDay) error {
+func SaveWorkoutDaysInFile(workoutDays []workoutDay) error {
 	data, err := json.MarshalIndent(workoutDays, "", "")
 	if err != nil {
 		return errors.New("save workoutDays: " + err.Error())
@@ -62,13 +61,13 @@ func SaveWorkoutDaysInFile(workoutDays []wod.WorkoutDay) error {
 	return nil
 }
 
-func PrintWorkoutDays(workoutDays []wod.WorkoutDay) {
+func PrintWorkoutDays(workoutDays []workoutDay) {
 	for _, d := range workoutDays {
 		fmt.Printf("%s %s \n", d.Title, d.ScheduledAt)
 	}
 }
 
-func DownloadWorkoutDays(url string) ([]wod.WorkoutDay, error) {
+func DownloadWorkoutDays(url string) ([]workoutDay, error) {
 	wods, err := GetWorkoutDaysFromURL(url)
 	if err != nil {
 		return nil, errors.New("download data: " + err.Error())

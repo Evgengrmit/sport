@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"sport/pkg/repository"
-	"sport/sportclub/schedules"
+	"sport/pkg/repository/schedulesRepo"
 )
 
-func GetSchedulesFromFile(filename string) ([]schedules.ScheduleJSON, error) {
+func GetSchedulesFromFile(filename string) ([]schedulesRepo.Schedule, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
@@ -20,20 +20,20 @@ func GetSchedulesFromFile(filename string) ([]schedules.ScheduleJSON, error) {
 	if err != nil {
 		return nil, err
 	}
-	var schdls []schedules.Schedule
+	var schdls []schedule
 
 	err = json.Unmarshal(body, &schdls)
 	if err != nil {
 		return nil, err
 	}
-	rightSchedules := make([]schedules.ScheduleJSON, 0, len(schdls))
+	rightSchedules := make([]schedulesRepo.Schedule, 0, len(schdls))
 	for _, schedule := range schdls {
-		rightSchedules = append(rightSchedules, schedules.ScheduleJSON{Name: schedule.Name, ScheduledAt: schedule.GetTime(), TrainerName: schedule.TrainerName, TrainerPic: schedule.TrainerPic})
+		rightSchedules = append(rightSchedules, schedulesRepo.Schedule{Name: schedule.Name, ScheduledAt: schedule.GetTime(), TrainerName: schedule.TrainerName, TrainerPic: schedule.TrainerPic})
 	}
 
 	return rightSchedules, nil
 }
-func AddScheduleInDB(schedules []schedules.ScheduleJSON) error {
+func AddScheduleInDB(schedules []schedulesRepo.Schedule) error {
 	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())
@@ -43,7 +43,7 @@ func AddScheduleInDB(schedules []schedules.ScheduleJSON) error {
 	for _, s := range schedules {
 		_, err = repos.CreateSchedule(s)
 		if err != nil {
-			return errors.New("add schedules: " + err.Error())
+			return errors.New("add schedulesRepo: " + err.Error())
 		}
 	}
 	return nil

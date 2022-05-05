@@ -1,18 +1,17 @@
-package schedules
+package schedulesRepo
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"sport/pkg/repository/trainer"
-	"sport/sportclub/schedules"
+	"sport/pkg/repository/trainerRepo"
 )
 
 func NewScheduleRepository(db *sqlx.DB) *ScheduleRepository {
 	return &ScheduleRepository{db: db}
 }
-func (s *ScheduleRepository) GetAllSchedules() ([]schedules.ScheduleJSON, error) {
+func (s *ScheduleRepository) GetAllSchedules() ([]Schedule, error) {
 	rows, err := s.db.DB.Query("SELECT  s.id,s.name,s.scheduled_at,t.name,t.avatar_url FROM schedule s JOIN trainer t on t.id = s.trainer_id")
 	if err != nil {
 		return nil, err
@@ -23,9 +22,9 @@ func (s *ScheduleRepository) GetAllSchedules() ([]schedules.ScheduleJSON, error)
 			fmt.Println(err.Error())
 		}
 	}(rows)
-	var results []schedules.ScheduleJSON
+	var results []Schedule
 	for rows.Next() {
-		sch := schedules.ScheduleJSON{}
+		sch := Schedule{}
 		err := rows.Scan(&sch.ID, &sch.Name, &sch.ScheduledAt, &sch.TrainerName, &sch.TrainerPic)
 		if err != nil {
 			return nil, err
@@ -37,11 +36,11 @@ func (s *ScheduleRepository) GetAllSchedules() ([]schedules.ScheduleJSON, error)
 	}
 	return results, nil
 }
-func (s *ScheduleRepository) CreateSchedule(sch schedules.ScheduleJSON) (int, error) {
+func (s *ScheduleRepository) CreateSchedule(sch Schedule) (int, error) {
 	if status, err := s.IsScheduleExists(sch); status || err != nil {
 		return 0, err
 	}
-	trainer := trainer.NewTrainerRepository(s.db)
+	trainer := trainerRepo.NewTrainerRepository(s.db)
 	trainerID, exists := trainer.GetTrainerID(sch.TrainerName)
 	var id int
 	if exists {
@@ -69,7 +68,7 @@ func (s *ScheduleRepository) CreateSchedule(sch schedules.ScheduleJSON) (int, er
 	}
 	return id, nil
 }
-func (s *ScheduleRepository) IsScheduleExists(sch schedules.ScheduleJSON) (bool, error) {
+func (s *ScheduleRepository) IsScheduleExists(sch Schedule) (bool, error) {
 	var exists bool
 	err := s.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM schedule WHERE name= $1 AND scheduled_at=$2)",
 		sch.Name, sch.ScheduledAt).Scan(&exists)

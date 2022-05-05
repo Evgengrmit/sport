@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"sport/pkg/repository/schedulesRepo"
+	"sport/pkg/repository/wodRepo"
 	"sport/pkg/service"
-	"sport/sportclub/schedules"
-	"sport/sportclub/wod"
 )
 
 type Handler struct {
@@ -17,8 +17,8 @@ type errorResponse struct {
 	Message string `json:"message"`
 }
 type getAllWorkoutDaysResponse struct {
-	Data []wod.WorkoutDayJSON `json:"data"`
+	Data []wodRepo.WorkoutDay `json:"data"`
 }
 type getAllSchedulesResponse struct {
-	Data []schedules.ScheduleJSON `json:"data"`
+	Data []schedulesRepo.Schedule `json:"data"`
 }

@@ -4,15 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
-	club "sport/sportclub/schedules"
 )
 
-func GetSchedulesFromURL(url string) ([]club.Schedule, error) {
+func GetSchedulesFromURL(url string) ([]schedule, error) {
 	body, err := GetDataFromUrl(url)
 	if err != nil {
 		return nil, err
 	}
-	var schedules []club.Schedule
+	var schedules []schedule
 
 	err = json.Unmarshal(body, &schedules)
 	if err != nil {
@@ -21,14 +20,14 @@ func GetSchedulesFromURL(url string) ([]club.Schedule, error) {
 	return schedules, nil
 }
 
-func SaveSchedulesInFile(schedules []club.Schedule) error {
+func SaveSchedulesInFile(schedules []schedule) error {
 	data, err := json.MarshalIndent(schedules, "", "")
 	if err != nil {
-		return errors.New("save schedules: " + err.Error())
+		return errors.New("save schedulesRepo: " + err.Error())
 	}
-	err = ioutil.WriteFile("schedules.json", data, 0644)
+	err = ioutil.WriteFile("schedulesRepo.json", data, 0644)
 	if err != nil {
-		return errors.New("save schedules: " + err.Error())
+		return errors.New("save schedulesRepo: " + err.Error())
 	}
 	return nil
 }
