@@ -54,22 +54,44 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
 	}
 	return results, nil
 }
-func (c *WorkoutDayRepository) GetWorkoutDaysByDays() (map[string][]WorkoutDay, error) {
-	results, err := c.GetAllWorkoutDays()
+func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
+	rows, err := c.db.DB.Query("SELECT  id,description,scheduled_at FROM workout_day")
 	if err != nil {
 		return nil, err
 	}
-	workoutDaysByDay := make(map[string][]WorkoutDay)
-	for _, res := range results {
-		weekDay := res.ScheduledAt.Weekday().String()
-		if _, ok := workoutDaysByDay[weekDay]; ok {
-			workoutDaysByDay[weekDay] = append(workoutDaysByDay[weekDay], res)
-		} else {
-			massiveOfWod := make([]WorkoutDay, 0)
-			massiveOfWod = append(massiveOfWod, res)
-			workoutDaysByDay[weekDay] = massiveOfWod
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err.Error())
 		}
-
+	}(rows)
+	var results []WorkoutDay
+	for rows.Next() {
+		compl := WorkoutDay{}
+		err := rows.Scan(&compl.Id, &compl.Description, &compl.ScheduledAt)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, compl)
 	}
-	return workoutDaysByDay, nil
+	if err = rows.Err(); err != nil {
+		return results, err
+	}
+	return results, nil
+	//results, err := c.GetAllWorkoutDays()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//workoutDaysByDay := make(map[string][]WorkoutDay)
+	//for _, res := range results {
+	//	weekDay := res.ScheduledAt.Weekday().String()
+	//	if _, ok := workoutDaysByDay[weekDay]; ok {
+	//		workoutDaysByDay[weekDay] = append(workoutDaysByDay[weekDay], res)
+	//	} else {
+	//		massiveOfWod := make([]WorkoutDay, 0)
+	//		massiveOfWod = append(massiveOfWod, res)
+	//		workoutDaysByDay[weekDay] = massiveOfWod
+	//	}
+	//
+	//}
 }

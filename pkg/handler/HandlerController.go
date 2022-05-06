@@ -7,7 +7,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	wods := router.Group("/wod")
 	{
 		wods.GET("/", h.GetAllWorkoutDays)
-		wods.GET("/latest", h.GetWorkoutDaysByDays)
+		wods.GET("/latest", h.GetWorkoutLatest)
 
 	}
 	schedules := router.Group("/schedules")

@@ -25,8 +25,8 @@ func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, getAllWorkoutDaysResponse{Data: complexes})
 }
-func (h *Handler) GetWorkoutDaysByDays(c *gin.Context) {
-	workoutDaysByDay, err := h.services.WorkoutDay.GetWorkoutDaysByDays()
+func (h *Handler) GetWorkoutLatest(c *gin.Context) {
+	workoutDaysByDay, err := h.services.WorkoutDay.GetWorkoutLatest()
 	if err != nil {
 		NewErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

@@ -6,7 +6,7 @@ import (
 
 type WorkoutDay interface {
 	GetAllWorkoutDays() ([]wodRepo.WorkoutDay, error)
-	GetWorkoutDaysByDays() (map[string][]wodRepo.WorkoutDay, error)
+	GetWorkoutLatest() ([]wodRepo.WorkoutDay, error)
 }
 
 type WorkoutDayService struct {
