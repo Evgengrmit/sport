@@ -14,5 +14,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		schedules.GET("/", h.GetAllSchedules)
 	}
+	exercises := router.Group("/exercises")
+	{
+		exercises.GET("/", h.GetAllExercises)
+	}
 	return router
 }

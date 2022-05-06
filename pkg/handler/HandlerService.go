@@ -43,3 +43,12 @@ func (h *Handler) GetAllSchedules(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, getAllSchedulesResponse{Data: schedules})
 }
+
+func (h *Handler) GetAllExercises(c *gin.Context) {
+	exercises, err := h.services.Exercise.GetAllExercises()
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": exercises})
+}
