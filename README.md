@@ -1,38 +1,16 @@
-# Sport Clubs API
-## Task 1
-Необходимо подготовить консольную команду, цель которой - получать JSON с данными спортивных комплексов.
+## Работа с миграциями (локально)
+Применить все неприменённые миграции:
+`migrate -path=./migration -database="postgres://postgres:qwerty@127.0.0.1:5436/postgres?sslmode=disable" up`
 
-Суть работы команды:
+Создать новую миграцию:
+` migrate -path=./migration -database="postgres://postgres:qwerty@127.0.0.1:5436/postgres?sslmode=disable" create -dir=./migration -ext=sql some_new_table`
 
-1) Используя метод GET получить JSON [данные](https://crossfit1905.com/index-app.php)
+Откатить 1 последнюю миграцию:
+` migrate -path=./migration -database="postgres://postgres:qwerty@127.0.0.1:5436/postgres?sslmode=disable" down 1`
 
-Метод возвращает список спортивных комплексов. Каждый комплекс состоит из названия (title), даты проведения (scheduledAt) и описания (description)
+Откатить все миграции:
+` migrate -path=./migration -database="postgres://postgres:qwerty@127.0.0.1:5436/postgres?sslmode=disable" down`
 
-2) Вывести в консоль название комплекса (title) и его дату (scheduledAt).
-
-## Task 2
-Используя данные из JSON, необходимо записать данные спортивных комплексов в БД
-
-Для этого необходимо:
-
-1) Создать в БД (PostgreSQL) таблицу workout_day
-
-Поля таблицы:
-
-- ID (GUID)
-- title
-- description
-- scheduled_at (timestamp, дата проведения комплекса)
-- created_at (дата создания комплекса)
-
-2) Создать ORM модель для сущности
-
-3) В консольной команде записывать комплексы в БД, используя созданную ORM модель
-
-При повторном запуске команды комплекс не должен записываться в БД, если такой комплекс уже существует (проверка по title + scheduledAt)
-## Task 3
-Реализовать API метод GET /schedules, который должен возвращать информацию в формате:
-Поля trainer, duration - пока харкодим( будем дорабатывать в рамках других задач)
 
 ## Console commands
 Скачивание данных комплексов:

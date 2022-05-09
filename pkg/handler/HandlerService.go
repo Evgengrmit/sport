@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"sport/pkg/repository/authRepo"
 	"sport/pkg/service"
 )
 
@@ -15,7 +16,19 @@ func NewErrorResponse(c *gin.Context, statusCode int, message string) {
 	log.Println(message)
 	c.AbortWithStatusJSON(statusCode, errorResponse{message})
 }
-
+func (h *Handler) Login(c *gin.Context) {
+	var input authRepo.User
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	result, err := h.services.Authorization.CreateUser(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"user": result})
+}
 func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	complexes, err := h.services.WorkoutDay.GetAllWorkoutDays()
 
@@ -25,8 +38,8 @@ func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, getAllWorkoutDaysResponse{Data: complexes})
 }
-func (h *Handler) GetWorkoutDaysByDays(c *gin.Context) {
-	workoutDaysByDay, err := h.services.WorkoutDay.GetWorkoutDaysByDays()
+func (h *Handler) GetWorkoutLatest(c *gin.Context) {
+	workoutDaysByDay, err := h.services.WorkoutDay.GetWorkoutLatest()
 	if err != nil {
 		NewErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

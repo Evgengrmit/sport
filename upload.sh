@@ -1,1 +1,1 @@
-rsync --exclude=docker-data -r ./ node1.nihao.int:/opt/crossfit/backend-golang
+rsync --delete --exclude=docker-data -r ./ node1.nihao.int:/opt/crossfit/backend-golang
