@@ -28,3 +28,10 @@ func (a *Authorization) IsUserExists(u User) (bool, error) {
 		u.Email).Scan(&exists)
 	return exists, err
 }
+
+func (a *Authorization) IsUserExistsByID(uID int) (bool, error) {
+	var exists bool
+	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE id = $1)",
+		uID).Scan(&exists)
+	return exists, err
+}
