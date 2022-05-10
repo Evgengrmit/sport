@@ -68,7 +68,7 @@ func (h *Handler) GetAllExercises(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": exercises})
 }
 
-func (h *Handler) AddResult(c *gin.Context) {
+func (h *Handler) AddExerciseResult(c *gin.Context) {
 	var input exerciseResultRepo.ExerciseResult
 	if err := c.BindJSON(&input); err != nil {
 		NewErrorResponse(c, http.StatusBadRequest, err.Error())

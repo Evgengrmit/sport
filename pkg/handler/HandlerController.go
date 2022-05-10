@@ -17,7 +17,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	}
 	exercise := router.Group("/exercise")
 	{
-		exercise.POST("/result", h.AddResult)
+		exercise.POST("/result", h.AddExerciseResult)
 	}
 	exercises := router.Group("/exercises")
 	{
