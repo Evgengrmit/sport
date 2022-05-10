@@ -20,6 +20,7 @@ type WorkoutDayRepo interface {
 	CreateWorkoutDay(s WorkoutDay) (int, error)
 	IsWorkoutDayExists(s WorkoutDay) (bool, error)
 	GetWorkoutLatest() ([]WorkoutDay, error)
+	IsWorkoutDayExistsByID(wodId int) (bool, error)
 }
 
 type WorkoutDayRepository struct {

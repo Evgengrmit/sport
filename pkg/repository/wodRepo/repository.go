@@ -95,3 +95,10 @@ func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
 	//
 	//}
 }
+func (c *WorkoutDayRepository) IsWorkoutDayExistsByID(wodId int) (bool, error) {
+	var exists bool
+
+	err := c.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM workout_day WHERE id= $1)",
+		wodId).Scan(&exists)
+	return exists, err
+}

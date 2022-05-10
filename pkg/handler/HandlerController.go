@@ -11,6 +11,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		wods.GET("/latest", h.GetWorkoutLatest)
 
 	}
+	workout := router.Group("/workout")
+	{
+		workout.POST("/result", h.AddWorkoutResult)
+	}
 	schedules := router.Group("/schedules")
 	{
 		schedules.GET("/", h.GetAllSchedules)

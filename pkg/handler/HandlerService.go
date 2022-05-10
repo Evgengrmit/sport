@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sport/pkg/repository/authRepo"
+	"sport/pkg/repository/workoutResultRepo"
 	"sport/pkg/service"
 )
 
@@ -64,4 +65,17 @@ func (h *Handler) GetAllExercises(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": exercises})
+}
+func (h *Handler) AddWorkoutResult(c *gin.Context) {
+	var input workoutResultRepo.WorkoutResult
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	_, err := h.services.WorkoutResult.CreateWorkoutResult(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "ok"})
 }

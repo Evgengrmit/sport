@@ -10,6 +10,7 @@ type User struct {
 type AuthorizationRepo interface {
 	CreateUser(u User) (User, error)
 	IsUserExists(u User) (bool, error)
+	IsUserExistsByID(uID int) (bool, error)
 }
 
 type Authorization struct {
