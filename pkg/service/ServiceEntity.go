@@ -5,7 +5,6 @@ import (
 	"sport/pkg/service/authService"
 	"sport/pkg/service/exerciseResultService"
 	"sport/pkg/service/exerciseService"
-	"sport/pkg/service/exerciseService"
 	"sport/pkg/service/schedulesService"
 	"sport/pkg/service/wodService"
 	"sport/pkg/service/workoutResultService"
@@ -21,18 +20,12 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{WorkoutDay: wodService.NewWorkoutDayService(repos.WorkoutDayRepo),
-		Schedule:      schedulesService.NewScheduleService(repos.ScheduleRepo),
-		Exercise:      exerciseService.NewExerciseService(repos.ExerciseRepo),
-		Authorization: authService.NewAuthorizationService(repos.AuthorizationRepo),
+	return &Service{
+		WorkoutDay:     wodService.NewWorkoutDayService(repos.WorkoutDayRepo),
+		Schedule:       schedulesService.NewScheduleService(repos.ScheduleRepo),
+		Exercise:       exerciseService.NewExerciseService(repos.ExerciseRepo),
+		Authorization:  authService.NewAuthorizationService(repos.AuthorizationRepo),
 		ExerciseResult: exerciseResultService.NewExerciseResultService(repos.ExerciseResultRepo),
-		WorkoutResult: workoutResultService.NewExerciseResultService(repos.WorkoutResultRepo)}
-}
-
-
-func NewService(repos *repository.Repository) *Service {
-	return &Service{WorkoutDay: wodService.NewWorkoutDayService(repos.WorkoutDayRepo),
-		Schedule: schedulesService.NewScheduleService(repos.ScheduleRepo),
-		Exercise: exerciseService.NewExerciseService(repos.ExerciseRepo)}
-		Authorization: authService.NewAuthorizationService(repos.AuthorizationRepo)}
+		WorkoutResult:  workoutResultService.NewExerciseResultService(repos.WorkoutResultRepo),
+	}
 }
