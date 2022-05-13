@@ -19,6 +19,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		schedules.GET("/", h.GetAllSchedules)
 	}
+	exercise := router.Group("/exercise")
+	{
+		exercise.POST("/result", h.AddExerciseResult)
+	}
 	exercises := router.Group("/exercises")
 	{
 		exercises.GET("/", h.GetAllExercises)

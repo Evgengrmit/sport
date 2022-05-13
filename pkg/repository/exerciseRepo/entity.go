@@ -9,6 +9,7 @@ type Exercise struct {
 }
 type ExerciseRepo interface {
 	GetAllExercises() ([]Exercise, error)
+	IsExerciseExistsByID(exID int) (bool, error)
 }
 
 type ExerciseRepository struct {

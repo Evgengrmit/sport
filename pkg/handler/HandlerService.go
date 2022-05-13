@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sport/pkg/repository/authRepo"
 	"sport/pkg/repository/workoutResultRepo"
+	"sport/pkg/repository/exerciseResultRepo"
 	"sport/pkg/service"
 )
 
@@ -17,6 +18,7 @@ func NewErrorResponse(c *gin.Context, statusCode int, message string) {
 	log.Println(message)
 	c.AbortWithStatusJSON(statusCode, errorResponse{message})
 }
+
 func (h *Handler) Login(c *gin.Context) {
 	var input authRepo.User
 	if err := c.BindJSON(&input); err != nil {
@@ -73,6 +75,20 @@ func (h *Handler) AddWorkoutResult(c *gin.Context) {
 		return
 	}
 	_, err := h.services.WorkoutResult.CreateWorkoutResult(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "ok"})
+}
+
+func (h *Handler) AddExerciseResult(c *gin.Context) {
+	var input exerciseResultRepo.ExerciseResult
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	_, err := h.services.ExerciseResult.CreateExerciseResult(input)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

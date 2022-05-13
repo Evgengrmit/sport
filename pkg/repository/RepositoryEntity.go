@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"sport/pkg/repository/authRepo"
 	"sport/pkg/repository/exerciseRepo"
+	"sport/pkg/repository/exerciseResultRepo"
 	"sport/pkg/repository/schedulesRepo"
 	"sport/pkg/repository/wodRepo"
 	"sport/pkg/repository/workoutResultRepo"
@@ -15,6 +16,7 @@ type Repository struct {
 	schedulesRepo.ScheduleRepo
 	exerciseRepo.ExerciseRepo
 	workoutResultRepo.WorkoutResultRepo
+	exerciseResultRepo.ExerciseResultRepo
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -23,6 +25,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 		ScheduleRepo:      schedulesRepo.NewScheduleRepository(db),
 		ExerciseRepo:      exerciseRepo.NewExerciseRepository(db),
 		AuthorizationRepo: authRepo.NewAuthorization(db),
+		ExerciseResultRepo: exerciseResultRepo.NewExerciseResultRepository(db),
 		WorkoutResultRepo: workoutResultRepo.NewWorkoutResultRepository(db),
 	}
 }

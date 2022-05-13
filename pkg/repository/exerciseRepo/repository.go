@@ -35,3 +35,9 @@ func (e *ExerciseRepository) GetAllExercises() ([]Exercise, error) {
 	}
 	return results, nil
 }
+func (e *ExerciseRepository) IsExerciseExistsByID(exID int) (bool, error) {
+	var exists bool
+	err := e.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM exercise WHERE id = $1)",
+		exID).Scan(&exists)
+	return exists, err
+}
