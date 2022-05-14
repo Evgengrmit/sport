@@ -2,17 +2,14 @@ package wodRepo
 
 import (
 	"github.com/jmoiron/sqlx"
-	"sport/pkg/repository/trainerRepo"
 	"time"
 )
 
 type WorkoutDay struct {
-	Duration    time.Duration       `json:"-"`
-	Id          int                 `json:"id"`
-	Title       string              `json:"title,omitempty"`
-	Description string              `json:"description,omitempty"`
-	ScheduledAt time.Time           `json:"scheduledAt"`
-	Trainer     trainerRepo.Trainer `json:"-"`
+	Id          int       `json:"id,string"`
+	Title       string    `json:"title,omitempty"`
+	Description string    `json:"description,omitempty"`
+	ScheduledAt time.Time `json:"scheduledAt"`
 }
 
 type WorkoutDayRepo interface {

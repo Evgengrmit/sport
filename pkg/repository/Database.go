@@ -31,6 +31,7 @@ func ConnectPostgresDB(cfg Config) (*sqlx.DB, error) {
 
 func GetConnection() (*sqlx.DB, error) {
 	host := os.Getenv("HOST")
+	println("host", host)
 	port := os.Getenv("DB_PORT")
 	username := os.Getenv("DB_USERNAME")
 	password := os.Getenv("DB_PASSWORD")
