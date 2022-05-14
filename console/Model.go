@@ -2,6 +2,8 @@ package console
 
 import (
 	"log"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -20,12 +22,16 @@ type ParsedWorkoutDay struct {
 
 func (s *ParsedScheduleItem) GetTime() time.Time {
 	timeString := s.Time
-	needTime, _ := time.Parse("3:04", timeString)
+
+	timePart := strings.Split(timeString, ":")
+	hour, _ := strconv.Atoi(timePart[0])
+	minutes, _ := strconv.Atoi(timePart[1])
+
 	currentTime := time.Now()
 	currentDay := int(currentTime.Weekday())
 	needDate := currentTime.AddDate(0, 0, s.Day-currentDay)
-	return time.Date(needDate.Year(), needDate.Month(), needDate.Day(), needTime.Hour(),
-		needTime.Minute(), needTime.Second(), needTime.Nanosecond(), needDate.Location())
+	return time.Date(needDate.Year(), needDate.Month(), needDate.Day(), hour, minutes,
+		0, 0, needDate.Location())
 }
 
 func (s *ParsedWorkoutDay) GetData() (string, string, time.Time) {

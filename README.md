@@ -36,7 +36,7 @@ $ go run cmd/server/main.go
 `docker-compose -f docker-compose.prod.yml exec backend go run cmd/complex/database/main.go --file=workoutDays.json`
 
 Скачивание расписания:
-`go run cmd/schedule/download/main.go --url=https://crossfit1905.com/app-schedules.php`
+`docker-compose -f docker-compose.prod.yml exec backend go run cmd/schedule/download/main.go --url=https://crossfit1905.com/app-schedules.php`
 
 Запись расписания:
-`go run cmd/schedule/database/main.go --file=schedulesRepo.json`
+`docker-compose -f docker-compose.prod.yml exec backend go run cmd/schedule/database/main.go --file=schedulesRepo.json`
