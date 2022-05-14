@@ -6,12 +6,12 @@ import (
 	"io/ioutil"
 )
 
-func GetSchedulesFromURL(url string) ([]schedule, error) {
+func GetSchedulesFromURL(url string) ([]ParsedScheduleItem, error) {
 	body, err := GetDataFromUrl(url)
 	if err != nil {
 		return nil, err
 	}
-	var schedules []schedule
+	var schedules []ParsedScheduleItem
 
 	err = json.Unmarshal(body, &schedules)
 	if err != nil {
@@ -20,7 +20,7 @@ func GetSchedulesFromURL(url string) ([]schedule, error) {
 	return schedules, nil
 }
 
-func SaveSchedulesInFile(schedules []schedule) error {
+func SaveSchedulesInFile(schedules []ParsedScheduleItem) error {
 	data, err := json.MarshalIndent(schedules, "", "")
 	if err != nil {
 		return errors.New("save schedulesRepo: " + err.Error())

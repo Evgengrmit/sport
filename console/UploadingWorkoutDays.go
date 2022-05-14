@@ -17,7 +17,7 @@ func GetFileName() string {
 	return *filename
 }
 
-func GetWorkoutDaysFromFile(filename string) ([]workoutDay, error) {
+func GetWorkoutDaysFromFile(filename string) ([]ParsedWorkoutDay, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
@@ -27,7 +27,7 @@ func GetWorkoutDaysFromFile(filename string) ([]workoutDay, error) {
 	if err != nil {
 		return nil, err
 	}
-	var workoutDays []workoutDay
+	var workoutDays []ParsedWorkoutDay
 
 	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
@@ -37,7 +37,7 @@ func GetWorkoutDaysFromFile(filename string) ([]workoutDay, error) {
 	return workoutDays, nil
 }
 
-func AddWorkoutDaysInDB(workoutDays []workoutDay) error {
+func AddWorkoutDaysInDB(workoutDays []ParsedWorkoutDay) error {
 	db, err := repository.GetConnection()
 	if err != nil {
 		str := fmt.Sprintf("error occurred when initialization database: %s", err.Error())

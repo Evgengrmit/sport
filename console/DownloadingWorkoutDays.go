@@ -35,12 +35,12 @@ func GetDataFromUrl(url string) ([]byte, error) {
 	defer res.Body.Close()
 	return ioutil.ReadAll(res.Body)
 }
-func GetWorkoutDaysFromURL(url string) ([]workoutDay, error) {
+func GetWorkoutDaysFromURL(url string) ([]ParsedWorkoutDay, error) {
 	body, err := GetDataFromUrl(url)
 	if err != nil {
 		return nil, err
 	}
-	var workoutDays []workoutDay
+	var workoutDays []ParsedWorkoutDay
 
 	err = json.Unmarshal(body, &workoutDays)
 	if err != nil {
@@ -49,7 +49,7 @@ func GetWorkoutDaysFromURL(url string) ([]workoutDay, error) {
 	return workoutDays, nil
 }
 
-func SaveWorkoutDaysInFile(workoutDays []workoutDay) error {
+func SaveWorkoutDaysInFile(workoutDays []ParsedWorkoutDay) error {
 	data, err := json.MarshalIndent(workoutDays, "", "")
 	if err != nil {
 		return errors.New("save workoutDays: " + err.Error())
@@ -61,13 +61,13 @@ func SaveWorkoutDaysInFile(workoutDays []workoutDay) error {
 	return nil
 }
 
-func PrintWorkoutDays(workoutDays []workoutDay) {
+func PrintWorkoutDays(workoutDays []ParsedWorkoutDay) {
 	for _, d := range workoutDays {
 		fmt.Printf("%s %s \n", d.Title, d.ScheduledAt)
 	}
 }
 
-func DownloadWorkoutDays(url string) ([]workoutDay, error) {
+func DownloadWorkoutDays(url string) ([]ParsedWorkoutDay, error) {
 	wods, err := GetWorkoutDaysFromURL(url)
 	if err != nil {
 		return nil, errors.New("download data: " + err.Error())

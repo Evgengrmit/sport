@@ -6,7 +6,7 @@ import (
 )
 
 type Schedule struct {
-	ID          int       `json:"id"`
+	ID          int       `json:"id,string"`
 	ScheduledAt time.Time `json:"scheduledAt"`
 	Name        string    `json:"name"`
 	TrainerName string    `json:"trainerName"`

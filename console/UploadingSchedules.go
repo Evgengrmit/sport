@@ -17,18 +17,25 @@ func GetSchedulesFromFile(filename string) ([]schedulesRepo.Schedule, error) {
 		return nil, err
 	}
 	body, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	var schdls []schedule
 
-	err = json.Unmarshal(body, &schdls)
 	if err != nil {
 		return nil, err
 	}
-	rightSchedules := make([]schedulesRepo.Schedule, 0, len(schdls))
-	for _, schedule := range schdls {
-		rightSchedules = append(rightSchedules, schedulesRepo.Schedule{Name: schedule.Name, ScheduledAt: schedule.GetTime(), TrainerName: schedule.TrainerName, TrainerPic: schedule.TrainerPic})
+	var schedules []ParsedScheduleItem
+
+	err = json.Unmarshal(body, &schedules)
+
+	if err != nil {
+		return nil, err
+	}
+	rightSchedules := make([]schedulesRepo.Schedule, 0, len(schedules))
+	for _, schedule := range schedules {
+		rightSchedules = append(rightSchedules,
+			schedulesRepo.Schedule{
+				Name:        schedule.Name,
+				ScheduledAt: schedule.GetTime(),
+				TrainerName: schedule.TrainerName,
+				TrainerPic:  schedule.TrainerPic})
 	}
 
 	return rightSchedules, nil

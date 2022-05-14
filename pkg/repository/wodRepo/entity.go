@@ -7,7 +7,7 @@ import (
 
 type WorkoutDay struct {
 	Id          int       `json:"id,string"`
-	Title       string    `json:"title,omitempty"`
+	Title       string    `json:"name,omitempty"`
 	Description string    `json:"description,omitempty"`
 	ScheduledAt time.Time `json:"scheduledAt"`
 }
