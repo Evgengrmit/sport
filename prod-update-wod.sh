@@ -1,0 +1,2 @@
+docker-compose -f docker-compose.prod.yml exec backend go run cmd/complex/download/main.go --url=https://crossfit1905.com/index-app.php
+docker-compose -f docker-compose.prod.yml exec backend go run cmd/complex/database/main.go --file=workoutDays.json
