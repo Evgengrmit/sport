@@ -55,7 +55,7 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
 	return results, nil
 }
 func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
-	rows, err := c.db.DB.Query("SELECT id, title, description, scheduled_at FROM workout_day ORDER BY scheduled_at DESC")
+	rows, err := c.db.DB.Query("SELECT id, title, description, scheduled_at FROM workout_day ORDER BY scheduled_at")
 	if err != nil {
 		return nil, err
 	}

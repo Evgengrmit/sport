@@ -8,7 +8,6 @@ import (
 	"sport/pkg/repository/exerciseResultRepo"
 	"sport/pkg/repository/workoutResultRepo"
 	"sport/pkg/service"
-	"time"
 )
 
 func NewHandler(serv *service.Service) *Handler {
