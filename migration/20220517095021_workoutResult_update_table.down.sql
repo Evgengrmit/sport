@@ -1,0 +1,1 @@
+ALTER TABLE workout_result DROP COLUMN user_name;
