@@ -19,6 +19,9 @@
 Запись комплексов в БД:
 `go run cmd/complex/database/main.go --file=complexes.json`
 
+Запись расписания в БД:
+`go run cmd/schedule/database/main.go --file=schedulesRepo.json`
+
 Запуск сервера
 ```
 $ source set_env.sh  

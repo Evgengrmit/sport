@@ -1,9 +1,18 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"sport/pkg/repository/schedulesRepo"
+)
 
 func (h *Handler) InitRoutes() *gin.Engine {
+
+	storageRootPath := schedulesRepo.GetStorageRootPath()
+
 	router := gin.Default()
+
+	router.Static(schedulesRepo.GetStorageRootUrl(), storageRootPath)
+
 	router.POST("/login", h.Login)
 	wods := router.Group("/wod")
 	{
