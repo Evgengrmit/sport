@@ -11,6 +11,7 @@ import (
 )
 
 type Repository struct {
+	authRepo.AuthCodeRepo
 	authRepo.AuthorizationRepo
 	wodRepo.WorkoutDayRepo
 	schedulesRepo.ScheduleRepo
@@ -21,11 +22,12 @@ type Repository struct {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		WorkoutDayRepo:    wodRepo.NewWorkoutDayRepository(db),
-		ScheduleRepo:      schedulesRepo.NewScheduleRepository(db),
-		ExerciseRepo:      exerciseRepo.NewExerciseRepository(db),
-		AuthorizationRepo: authRepo.NewAuthorization(db),
+		AuthCodeRepo:       authRepo.NewAuthCode(db),
+		WorkoutDayRepo:     wodRepo.NewWorkoutDayRepository(db),
+		ScheduleRepo:       schedulesRepo.NewScheduleRepository(db),
+		ExerciseRepo:       exerciseRepo.NewExerciseRepository(db),
+		AuthorizationRepo:  authRepo.NewAuthorization(db),
 		ExerciseResultRepo: exerciseResultRepo.NewExerciseResultRepository(db),
-		WorkoutResultRepo: workoutResultRepo.NewWorkoutResultRepository(db),
+		WorkoutResultRepo:  workoutResultRepo.NewWorkoutResultRepository(db),
 	}
 }

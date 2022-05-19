@@ -30,7 +30,7 @@ func (h *Handler) Login(c *gin.Context) {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"user": result})
+	c.JSON(http.StatusCreated, gin.H{"code": result})
 }
 func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	complexes, err := h.services.WorkoutDay.GetAllWorkoutDays()

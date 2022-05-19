@@ -1,9 +1,20 @@
 package authService
 
-import "sport/pkg/repository/authRepo"
+import (
+	"sport/pkg/repository/authRepo"
+)
+
+type AuthCode interface {
+	CreateCode(user authRepo.User) (authRepo.AuthorizationCode, error)
+	VerifyCode(code authRepo.AuthorizationCode) (authRepo.User, error)
+}
 
 type Authorization interface {
-	CreateUser(u authRepo.User) (authRepo.User, error)
+	CreateUser(u authRepo.User) (authRepo.AuthorizationCode, error)
+}
+
+type AuthCodeService struct {
+	repo authRepo.AuthCodeRepo
 }
 
 type AuthorizationService struct {

@@ -11,6 +11,7 @@ import (
 )
 
 type Service struct {
+	authService.AuthCode
 	wodService.WorkoutDay
 	schedulesService.Schedule
 	exerciseService.Exercise
@@ -21,6 +22,7 @@ type Service struct {
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
+		AuthCode:       authService.NewAuthCodeService(repos.AuthCodeRepo),
 		WorkoutDay:     wodService.NewWorkoutDayService(repos.WorkoutDayRepo),
 		Schedule:       schedulesService.NewScheduleService(repos.ScheduleRepo),
 		Exercise:       exerciseService.NewExerciseService(repos.ExerciseRepo),
