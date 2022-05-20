@@ -95,3 +95,18 @@ func (h *Handler) AddExerciseResult(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "ok"})
 }
+
+func (h *Handler) Verify(c *gin.Context) {
+	var input authRepo.AuthorizationCode
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	result, err := h.services.AuthCode.VerifyCode(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": result})
+
+}

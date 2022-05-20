@@ -7,6 +7,6 @@ CREATE TABLE authorization_code
     attempt_count int                  default 0,
     used_at       timestamptz null,
     auth_type     auth,
-    expired_at    timestamptz not null default current_timestamp + interval '5 minute',
-    created_at    timestamptz not null default current_timestamp
+    expired_at    timestamptz not null default (current_timestamp AT TIME ZONE 'Europe/Moscow' + interval '5 minute'),
+    created_at    timestamptz not null default (current_timestamp AT TIME ZONE 'Europe/Moscow')
 );

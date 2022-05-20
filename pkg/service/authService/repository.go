@@ -22,3 +22,13 @@ func (a *AuthCodeService) CreateCode(user authRepo.User) (authRepo.Authorization
 func (a *AuthCodeService) VerifyCode(code authRepo.AuthorizationCode) (authRepo.User, error) {
 	return a.repo.VerifyCode(code)
 }
+
+func (a *AuthCodeService) UpdateCode(code authRepo.CodeStatus) error {
+	return a.repo.UpdateCode(code)
+}
+func (a *AuthCodeService) GetCodeStatusByID(code authRepo.AuthorizationCode) (authRepo.CodeStatus, error) {
+	return a.repo.GetCodeStatusByID(code)
+}
+func (a *AuthCodeService) IsCodeExists(id int) (bool, error) {
+	return a.repo.IsCodeExists(id)
+}

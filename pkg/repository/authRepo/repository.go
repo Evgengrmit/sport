@@ -1,6 +1,7 @@
 package authRepo
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"math/rand"
@@ -96,6 +97,24 @@ func (a *Authorization) IsUserExistsByID(uID int) (bool, error) {
 		uID).Scan(&exists)
 	return exists, err
 }
+func (a *Authorization) GetUserById(id int) (User, error) {
+	exists, err := a.IsUserExistsByID(id)
+	if err != nil {
+		return User{}, err
+	}
+	if exists {
+		var user User
+		var phone, email sql.NullString
+		err = a.db.DB.QueryRow("SELECT id, name,email,phone FROM users WHERE id =$1", id).Scan(&user.ID, &user.Name, &email, &phone)
+		if err != nil {
+			return User{}, err
+		}
+		user.Phone = phone.String
+		user.Email = email.String
+		return user, nil
+	}
+	return User{}, errors.New("there is no user with this name")
+}
 
 func NewAuthCode(db *sqlx.DB) *AuthCode {
 	return &AuthCode{db: db}
@@ -116,7 +135,79 @@ func (a *AuthCode) CreateCode(user User) (AuthorizationCode, error) {
 	}
 	return authCode, nil
 }
+func (a *AuthCode) UpdateCode(code CodeStatus) error {
+	if code.UsedAt.Valid {
+		_, err := a.db.DB.Exec("UPDATE authorization_code SET attempt_count =$1, used_at=$2 WHERE id = $3", code.AttemptCount, code.UsedAt.Time, code.ID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	_, err := a.db.DB.Exec("UPDATE authorization_code SET attempt_count =$1  WHERE id = $2", code.AttemptCount, code.ID)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
 func (a *AuthCode) VerifyCode(code AuthorizationCode) (User, error) {
-	return User{}, nil
+	codeStatus, err := a.GetCodeStatusByID(code)
+	if err != nil {
+		return User{}, err
+	}
+	if codeStatus.AttemptCount >= 3 {
+		return User{}, errors.New("the limit of attempts has been reached")
+	}
+	if codeStatus.Code != code.Code {
+		codeStatus.AttemptCount += 1
+		err = a.UpdateCode(codeStatus)
+		if err != nil {
+			return User{}, err
+		}
+		return User{}, errors.New("invalid code")
+	}
+	if codeStatus.UsedAt.Valid {
+		return User{}, errors.New("this code has already been used")
+	}
+	if codeStatus.ExpiredAt.Before(time.Now()) {
+		return User{}, errors.New("the code has expired")
+	}
+	codeStatus.UsedAt.Time = time.Now()
+	codeStatus.UsedAt.Valid = true
+
+	err = a.UpdateCode(codeStatus)
+	if err != nil {
+		return User{}, err
+	}
+	auth := NewAuthorization(a.db)
+	user, err := auth.GetUserById(codeStatus.UserID)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
+func (a *AuthCode) GetCodeStatusByID(code AuthorizationCode) (CodeStatus, error) {
+	exists, err := a.IsCodeExists(code.ID)
+	if err != nil {
+		return CodeStatus{}, err
+	}
+	if exists {
+		var codeSt CodeStatus
+		err = a.db.DB.QueryRow("SELECT id, user_id, code, attempt_count, expired_at, used_at FROM authorization_code WHERE id=$1",
+			code.ID).Scan(&codeSt.ID, &codeSt.UserID, &codeSt.Code, &codeSt.AttemptCount, &codeSt.ExpiredAt, &codeSt.UsedAt)
+		if err != nil {
+			return CodeStatus{}, err
+		}
+		return codeSt, nil
+	}
+
+	return CodeStatus{}, errors.New("incorrect id")
+}
+
+func (a *AuthCode) IsCodeExists(id int) (bool, error) {
+	var exists bool
+	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM authorization_code WHERE id = $1)",
+		id).Scan(&exists)
+	return exists, err
 }
