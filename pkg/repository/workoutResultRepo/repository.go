@@ -1,6 +1,7 @@
 package workoutResultRepo
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"sport/pkg/repository/authRepo"
@@ -31,12 +32,19 @@ func (w *WorkoutResultRepository) CreateWorkoutResult(wod WorkoutResult) (Workou
 	if !exerciseExists {
 		return WorkoutResult{}, errors.New("workout day with this id does not exist")
 	}
-	if userExists {
-		err = w.db.DB.QueryRow("INSERT INTO workout_result (workout_id, user_id, comment, time_second,time_cap) VALUES ($1,$2,$3,$4,$5) RETURNING id,created_at",
-			wod.WorkoutId, wod.UserId, wod.Comment, wod.TimeSecond, wod.TimeCap).Scan(&wod.ID, &wod.CreatedAt)
-	} else {
-		err = w.db.DB.QueryRow("INSERT INTO workout_result (workout_id, user_name, comment, time_second,time_cap) VALUES ($1,$2,$3,$4,$5) RETURNING id,created_at",
-			wod.WorkoutId, wod.UserName, wod.Comment, wod.TimeSecond, wod.TimeCap).Scan(&wod.ID, &wod.CreatedAt)
-	}
+	err = w.db.DB.QueryRow("INSERT INTO workout_result (workout_id, user_id,user_name, comment, time_second,time_cap) VALUES ($1,$2,$3,$4,$5, $6) RETURNING id,created_at",
+		wod.WorkoutId, newNullInt64(wod.UserId, userExists), newNullString(wod.UserName), wod.Comment, wod.TimeSecond, wod.TimeCap).Scan(&wod.ID, &wod.CreatedAt)
 	return wod, err
+}
+func newNullString(name string) sql.NullString {
+	if name == "" {
+		return sql.NullString{}
+	}
+	return sql.NullString{String: name, Valid: true}
+}
+func newNullInt64(id int, idExists bool) sql.NullInt64 {
+	if idExists {
+		return sql.NullInt64{Int64: int64(id), Valid: true}
+	}
+	return sql.NullInt64{}
 }
