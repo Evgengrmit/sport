@@ -27,9 +27,8 @@ type CodeStatus struct {
 
 type AuthorizationRepo interface {
 	CreateUser(u User) (AuthorizationCode, error)
-	IsUserExistsByEmail(u User) (bool, error)
+	IsUserExists(u User) (bool, error)
 	IsUserExistsByID(uID int) (bool, error)
-	IsUserExistsByPhone(u User) (bool, error)
 	GetUserById(id int) (User, error)
 }
 

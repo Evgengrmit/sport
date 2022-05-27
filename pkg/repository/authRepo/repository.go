@@ -12,82 +12,57 @@ import (
 func NewAuthorization(db *sqlx.DB) *Authorization {
 	return &Authorization{db: db}
 }
+func (a *Authorization) CheckUser(u User) (bool, error) {
+	if u.Email == "" && u.Phone == "" {
+		return false, errors.New("there must be a phone number or email")
+	}
+	if u.Email == "" && !checkPhoneNumber(u.Phone) {
+		return false, errors.New("incorrect phone number")
+	}
+
+	return a.IsUserExists(u)
+
+}
+func (a *Authorization) create(u User) (User, error) {
+	userEmail := getNullString(u.Email)
+	var userPhone sql.NullString
+	if checkPhoneNumber(u.Phone) {
+		userPhone = getNullString(u.Phone)
+	} else {
+		userPhone = getNullString("")
+	}
+	err := a.db.DB.QueryRow("INSERT INTO users (name, email,phone) VALUES ($1,$2,$3) RETURNING id",
+		u.Name, userEmail, userPhone).Scan(&u.ID)
+	if err != nil {
+		return User{}, err
+	}
+	return u, nil
+}
 
 func (a *Authorization) CreateUser(u User) (AuthorizationCode, error) {
 	authCode := NewAuthCode(a.db)
-	if u.Email != "" && u.Phone == "" {
-
-		statusEmail, err := a.IsUserExistsByEmail(u)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		if statusEmail {
-			return AuthorizationCode{}, errors.New("user with this email exists")
-		}
-		err = a.db.DB.QueryRow("INSERT INTO users (name, email) VALUES ($1,$2) RETURNING id",
-			u.Name, u.Email).Scan(&u.ID)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		return authCode.CreateCode(u)
-	} else if u.Email == "" && u.Phone != "" {
-		matched, err := regexp.MatchString(`^(7\d{10})?$`, u.Phone)
-		if !matched || err != nil {
-			return AuthorizationCode{}, errors.New("incorrect phone number format")
-		}
-		statusPhone, err := a.IsUserExistsByPhone(u)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		if statusPhone {
-			return AuthorizationCode{}, errors.New("user with this phone exists")
-		}
-		err = a.db.DB.QueryRow("INSERT INTO users (name, phone) VALUES ($1,$2) RETURNING id",
-			u.Name, u.Phone).Scan(&u.ID)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		return authCode.CreateCode(u)
-	} else if u.Email != "" && u.Phone != "" {
-		matched, err := regexp.MatchString(`^(7\d{10})?$`, u.Phone)
-		if !matched || err != nil {
-			return AuthorizationCode{}, errors.New("incorrect phone number format")
-		}
-		statusPhone, err := a.IsUserExistsByPhone(u)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		if statusPhone {
-			return AuthorizationCode{}, errors.New("user with this phone exists")
-		}
-		statusEmail, err := a.IsUserExistsByEmail(u)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		if statusEmail {
-			return AuthorizationCode{}, errors.New("user with this email exists")
-		}
-		err = a.db.DB.QueryRow("INSERT INTO users (name, email,phone) VALUES ($1,$2,$3) RETURNING id",
-			u.Name, u.Email, u.Phone).Scan(&u.ID)
-		if err != nil {
-			return AuthorizationCode{}, err
-		}
-		return authCode.CreateCode(u)
+	userExists, err := a.CheckUser(u)
+	if err != nil {
+		return AuthorizationCode{}, err
 	}
-	return AuthorizationCode{}, errors.New("there must be a phone number or email")
+	if userExists {
+		user, err := a.GetUserByData(u)
+		if err != nil {
+			return AuthorizationCode{}, err
+		}
+		return authCode.CreateCode(user)
+	}
+	user, err := a.create(u)
+	if err != nil {
+		return AuthorizationCode{}, err
+	}
+	return authCode.CreateCode(user)
 }
 
-func (a *Authorization) IsUserExistsByEmail(u User) (bool, error) {
+func (a *Authorization) IsUserExists(u User) (bool, error) {
 	var exists bool
-	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE email = $1)",
-		u.Email).Scan(&exists)
-	return exists, err
-}
-
-func (a *Authorization) IsUserExistsByPhone(u User) (bool, error) {
-	var exists bool
-	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE phone = $1)",
-		u.Phone).Scan(&exists)
+	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE email = $1 OR phone = $2)",
+		u.Email, u.Phone).Scan(&exists)
 	return exists, err
 }
 
@@ -96,6 +71,19 @@ func (a *Authorization) IsUserExistsByID(uID int) (bool, error) {
 	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE id = $1)",
 		uID).Scan(&exists)
 	return exists, err
+}
+func (a *Authorization) GetUserByData(u User) (User, error) {
+	var user User
+	phone := getNullString(u.Phone)
+	email := getNullString(u.Email)
+	err := a.db.DB.QueryRow("SELECT id, name,email,phone FROM users WHERE email =$1 OR phone=$2", email, phone).Scan(&user.ID, &user.Name, &email, &phone)
+	if err != nil {
+		return User{}, err
+	}
+	user.Phone = phone.String
+	user.Email = email.String
+	return user, nil
+
 }
 func (a *Authorization) GetUserById(id int) (User, error) {
 	exists, err := a.IsUserExistsByID(id)
@@ -210,4 +198,16 @@ func (a *AuthCode) IsCodeExists(id int) (bool, error) {
 	err := a.db.DB.QueryRow("SELECT EXISTS(SELECT * FROM authorization_code WHERE id = $1)",
 		id).Scan(&exists)
 	return exists, err
+}
+
+func getNullString(str string) sql.NullString {
+	if str == "" {
+		return sql.NullString{}
+	}
+	return sql.NullString{String: str, Valid: true}
+}
+
+func checkPhoneNumber(phone string) bool {
+	matched, _ := regexp.MatchString(`^(7\d{10})?$`, phone)
+	return matched
 }
