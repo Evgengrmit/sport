@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"sport/pkg/repository/trainerRepo"
-	"sport/pkg/utils"
 )
 
 func NewScheduleRepository(db *sqlx.DB) *ScheduleRepository {
@@ -42,15 +41,6 @@ func (s *ScheduleRepository) GetAllSchedules() ([]Schedule, error) {
 	return results, nil
 }
 func (s *ScheduleRepository) CreateSchedule(schedule Schedule) (int, error) {
-	if schedule.TrainerPic != "" {
-		err, thumbUrl := imageUtils.GetAvatarThumbUrl(schedule.TrainerPic)
-		if err == nil {
-			schedule.TrainerPic = imageUtils.GetStorageRootUrl() + thumbUrl
-		} else {
-			schedule.TrainerPic = ""
-		}
-	}
-
 	if status, err := s.IsScheduleExists(schedule); status || err != nil {
 		return 0, err
 	}
