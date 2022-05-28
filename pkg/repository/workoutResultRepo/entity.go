@@ -6,7 +6,7 @@ type WorkoutResult struct {
 	ID         int    `json:"id"`
 	UserId     int    `json:"userId,omitempty"`
 	UserName   string `json:"userName,omitempty"`
-	WorkoutId  int    `json:"workoutId,omitempty"`
+	WorkoutId  int    `json:"workoutId"`
 	Comment    string `json:"comment"`
 	CreatedAt  string `json:"createdAt,omitempty"`
 	TimeSecond int    `json:"timeSecond"`
