@@ -22,8 +22,11 @@ func GetStorageRootPath() string {
 	storageRootPath := os.Getenv("STORAGE_PATH")
 	return storageRootPath
 }
-func GetStorageRootUrl() string {
-	return "https://crossfit-api.nihao.team/assets/"
+func GetStorageFullUrl() string {
+	return "https://crossfit-api.nihao.team" + GetStorageUrlPrefix() + "/"
+}
+func GetStorageUrlPrefix() string {
+	return "/assets"
 }
 
 /**

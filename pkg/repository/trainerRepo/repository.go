@@ -29,7 +29,7 @@ func (t *TrainerRepository) CreateTrainer(trainerName, trainerPic string) (int, 
 	if trainerPic != "" {
 		err, thumbUrl := imageUtils.GetAvatarThumbUrl(trainerPic)
 		if err == nil {
-			trainerPic = imageUtils.GetStorageRootUrl() + thumbUrl
+			trainerPic = imageUtils.GetStorageFullUrl() + thumbUrl
 		} else {
 			trainerPic = ""
 		}
