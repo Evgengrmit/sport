@@ -14,6 +14,7 @@ func NewWorkoutResultRepository(db *sqlx.DB) *WorkoutResultRepository {
 }
 
 func (w *WorkoutResultRepository) CreateWorkoutResult(wod WorkoutResult) (WorkoutResult, error) {
+
 	userDB := authRepo.NewAuthorization(w.db)
 	wodDB := wodRepo.NewWorkoutDayRepository(w.db)
 	userExists, err := userDB.IsUserExistsByID(wod.UserId)
@@ -53,6 +54,7 @@ func newNullInt64(id int, idExists bool) sql.NullInt64 {
 }
 
 func (w *WorkoutResultRepository) GetWorkoutResults(id int) ([]WorkoutResult, error) {
+
 	rows, err := w.db.DB.Query("SELECT  id,user_name,time_second, time_cap,comment,created_at FROM workout_result WHERE workout_id=$1", id)
 	if err != nil {
 		return nil, err

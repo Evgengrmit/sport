@@ -12,6 +12,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	storageRootPath := imageUtils.GetStorageRootPath()
 	router.Static(imageUtils.GetStorageUrlPrefix(), storageRootPath)
 
+	router.GET("/info", h.GetInfo)
 	router.POST("/login", h.Login)
 	wods := router.Group("/wod")
 	{

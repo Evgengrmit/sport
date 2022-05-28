@@ -12,6 +12,7 @@ func NewScheduleRepository(db *sqlx.DB) *ScheduleRepository {
 	return &ScheduleRepository{db: db}
 }
 func (s *ScheduleRepository) GetAllSchedules() ([]Schedule, error) {
+
 	sqlQuery := "SELECT " +
 		"	s.id, s.name, s.scheduled_at, t.name, t.avatar_url " +
 		"FROM schedule s JOIN trainer t on t.id = s.trainer_id ORDER BY s.scheduled_at"

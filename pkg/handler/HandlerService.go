@@ -2,8 +2,10 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sport/pkg/repository/authRepo"
 	"sport/pkg/repository/exerciseResultRepo"
 	"sport/pkg/repository/workoutResultRepo"
@@ -109,4 +111,15 @@ func (h *Handler) GetWorkoutResults(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": wodResults})
+}
+
+func (h *Handler) GetInfo(c *gin.Context) {
+	currentPath, _ := os.Getwd()
+	file, err := os.Open(currentPath + "/about.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	infoContent, _ := ioutil.ReadAll(file)
+	c.JSON(http.StatusOK, gin.H{"text": string(infoContent)})
 }

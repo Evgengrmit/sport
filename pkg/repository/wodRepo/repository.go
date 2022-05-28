@@ -30,6 +30,7 @@ func (c *WorkoutDayRepository) IsWorkoutDayExists(s WorkoutDay) (bool, error) {
 	return exists, err
 }
 func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
+
 	rows, err := c.db.DB.Query("SELECT  id,title,scheduled_at FROM workout_day")
 	if err != nil {
 		return nil, err
@@ -55,6 +56,7 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
 	return results, nil
 }
 func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
+
 	sqlQuery := "SELECT id, title, description, scheduled_at " +
 		"FROM workout_day " +
 		"WHERE scheduled_at >= NOW() - INTERVAL '90 days' " +
