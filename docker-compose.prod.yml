@@ -25,7 +25,7 @@ services:
     ports:
       - 18080:8080
     volumes:
-      - ./ugc:/ugc
+      - ./docker-data/ugc:/ugc
     environment:
       HOST: postgres
       DB_PORT: 5432
