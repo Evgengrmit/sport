@@ -2,100 +2,12 @@ package schedulesRepo
 
 import (
 	"context"
-	"crypto/md5"
 	"database/sql"
-	"encoding/hex"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/nfnt/resize"
-	"image/jpeg"
-	"io"
-	"log"
-	"net/http"
-	"os"
 	"sport/pkg/repository/trainerRepo"
-	"time"
+	"sport/pkg/utils"
 )
-
-func GetMD5Hash(text string) string {
-	hash := md5.Sum([]byte(text))
-	return hex.EncodeToString(hash[:])
-}
-
-func GetStorageRootPath() string {
-	storageRootPath := os.Getenv("STORAGE_PATH")
-	if storageRootPath == "" {
-		storageRootPath = "./"
-	}
-	return storageRootPath
-}
-func GetStorageRootUrl() string {
-	return "/assets"
-}
-
-func getImageThumbUrl(url string) (error, string) {
-	fmt.Println(url)
-
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15")
-	req.Header.Set("Host", "crossfit1905.com")
-	response, e := client.Do(req)
-
-	if e != nil {
-		log.Fatal(e)
-		return e, ""
-	}
-	defer response.Body.Close()
-
-	//open a file for writing
-	hashedFileName := GetMD5Hash(url)
-	//hashedFileNameStr := string(hashedFileName[:])
-
-	fullFilePath := GetStorageRootPath() + "/" + hashedFileName + ".jpg"
-	file, err := os.Create(fullFilePath)
-	if err != nil {
-		log.Fatal(err)
-		return err, ""
-	}
-	defer file.Close()
-
-	// Use io.Copy to just dump the response body to the file. This supports huge files
-	fmt.Println(response.Body)
-	_, err = io.Copy(file, response.Body)
-	if err != nil {
-		log.Fatal(err)
-		return err, ""
-	}
-	fmt.Println("Success!")
-	time.Sleep(3 * time.Second) // сервер блокирует слишком частые запросы
-
-	// resize to width 1000 using Lanczos resampling
-	// and preserve aspect ratio
-	imageFile, err := os.Open(fullFilePath)
-	img, err := jpeg.Decode(imageFile)
-	if err != nil {
-		fmt.Println("ERROR on decode")
-		fmt.Println(err)
-		return err, ""
-	}
-
-	m := resize.Resize(300, 0, img, resize.Lanczos3)
-	thumbUrl := hashedFileName + "_thumb.jpg"
-	fullThumbFilePath := GetStorageRootPath() + "/" + thumbUrl
-
-	out, err := os.Create(fullThumbFilePath)
-	if err != nil {
-		log.Fatal(err)
-		return err, ""
-	}
-	defer out.Close()
-
-	// write new image to file
-	jpeg.Encode(out, m, nil)
-
-	return nil, thumbUrl
-}
 
 func NewScheduleRepository(db *sqlx.DB) *ScheduleRepository {
 	return &ScheduleRepository{db: db}
@@ -131,9 +43,9 @@ func (s *ScheduleRepository) GetAllSchedules() ([]Schedule, error) {
 }
 func (s *ScheduleRepository) CreateSchedule(schedule Schedule) (int, error) {
 	if schedule.TrainerPic != "" {
-		err, thumbUrl := getImageThumbUrl(schedule.TrainerPic)
+		err, thumbUrl := imageUtils.GetAvatarThumbUrl(schedule.TrainerPic)
 		if err == nil {
-			schedule.TrainerPic = "https://crossfit-api.nihao.team" + GetStorageRootUrl() + "/" + thumbUrl
+			schedule.TrainerPic = imageUtils.GetStorageRootUrl() + thumbUrl
 		} else {
 			schedule.TrainerPic = ""
 		}
