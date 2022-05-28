@@ -15,6 +15,7 @@ type WorkoutResult struct {
 
 type WorkoutResultRepo interface {
 	CreateWorkoutResult(wod WorkoutResult) (WorkoutResult, error)
+	GetWorkoutResults(id int) ([]WorkoutResult, error)
 }
 
 type WorkoutResultRepository struct {

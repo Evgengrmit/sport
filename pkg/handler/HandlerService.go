@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	"sport/pkg/repository/authRepo"
-	"sport/pkg/repository/workoutResultRepo"
 	"sport/pkg/repository/exerciseResultRepo"
+	"sport/pkg/repository/workoutResultRepo"
 	"sport/pkg/service"
+	"strconv"
 )
 
 func NewHandler(serv *service.Service) *Handler {
@@ -94,4 +95,18 @@ func (h *Handler) AddExerciseResult(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "ok"})
+}
+
+func (h *Handler) GetWorkoutResults(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	wodResults, err := h.services.GetWorkoutResults(id)
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": wodResults})
 }

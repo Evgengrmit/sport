@@ -42,12 +42,12 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
 	}(rows)
 	var results []WorkoutDay
 	for rows.Next() {
-		compl := WorkoutDay{}
-		err := rows.Scan(&compl.Id, &compl.Title, &compl.ScheduledAt)
+		wod := WorkoutDay{}
+		err := rows.Scan(&wod.Id, &wod.Title, &wod.ScheduledAt)
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, compl)
+		results = append(results, wod)
 	}
 	if err = rows.Err(); err != nil {
 		return results, err
@@ -55,7 +55,11 @@ func (c *WorkoutDayRepository) GetAllWorkoutDays() ([]WorkoutDay, error) {
 	return results, nil
 }
 func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
-	rows, err := c.db.DB.Query("SELECT id, title, description, scheduled_at FROM workout_day ORDER BY scheduled_at DESC")
+	sqlQuery := "SELECT id, title, description, scheduled_at " +
+		"FROM workout_day " +
+		"WHERE scheduled_at >= NOW() - INTERVAL '90 days' " +
+		"ORDER BY scheduled_at"
+	rows, err := c.db.DB.Query(sqlQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -67,12 +71,12 @@ func (c *WorkoutDayRepository) GetWorkoutLatest() ([]WorkoutDay, error) {
 	}(rows)
 	var results []WorkoutDay
 	for rows.Next() {
-		compl := WorkoutDay{}
-		err := rows.Scan(&compl.Id, &compl.Title, &compl.Description, &compl.ScheduledAt)
+		wod := WorkoutDay{}
+		err := rows.Scan(&wod.Id, &wod.Title, &wod.Description, &wod.ScheduledAt)
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, compl)
+		results = append(results, wod)
 	}
 	if err = rows.Err(); err != nil {
 		return results, err
