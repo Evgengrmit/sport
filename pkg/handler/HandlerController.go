@@ -22,6 +22,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	}
 	workout := router.Group("/workout")
 	{
+		workout.GET("/:id/result", h.GetWorkoutResults)
 		workout.POST("/result", h.AddWorkoutResult)
 	}
 	schedules := router.Group("/schedules")
