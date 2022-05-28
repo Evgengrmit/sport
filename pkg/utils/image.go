@@ -20,9 +20,6 @@ func GetMD5Hash(text string) string {
 
 func GetStorageRootPath() string {
 	storageRootPath := os.Getenv("STORAGE_PATH")
-	if storageRootPath == "" {
-		storageRootPath = "./"
-	}
 	return storageRootPath
 }
 func GetStorageRootUrl() string {
