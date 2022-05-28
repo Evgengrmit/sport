@@ -91,7 +91,6 @@ func resizePicture(imageData io.Reader, hashedFileName string) (error, string) {
 	}
 	defer resizedImageFile.Close()
 
-	// write new image to file
 	jpeg.Encode(resizedImageFile, resizedImage, nil)
 
 	return nil, thumbFileName
