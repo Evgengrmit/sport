@@ -5,8 +5,8 @@ CREATE TABLE authorization_code
     user_id       int references users (id),
     code          varchar(4)  not null,
     attempt_count int                  default 0,
-    used_at       timestamptz null,
+    used_at       timestamp null,
     auth_type     auth,
-    expired_at    timestamptz not null default (current_timestamp AT TIME ZONE 'Europe/Moscow' + interval '5 minute'),
-    created_at    timestamptz not null default (current_timestamp AT TIME ZONE 'Europe/Moscow')
+    expired_at    timestamp not null default (current_timestamp + interval '5 minute'),
+    created_at    timestamp not null default (current_timestamp )
 );
