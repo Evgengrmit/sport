@@ -40,16 +40,17 @@ func (s *ScheduleRepository) GetAllSchedules() ([]Schedule, error) {
 	}
 	return results, nil
 }
-func (s *ScheduleRepository) CreateSchedule(sch Schedule) (int, error) {
-	if status, err := s.IsScheduleExists(sch); status || err != nil {
+func (s *ScheduleRepository) CreateSchedule(schedule Schedule) (int, error) {
+	if status, err := s.IsScheduleExists(schedule); status || err != nil {
 		return 0, err
 	}
 	trainer := trainerRepo.NewTrainerRepository(s.db)
-	trainerID, exists := trainer.GetTrainerID(sch.TrainerName)
+
+	trainerID, exists := trainer.GetTrainerID(schedule.TrainerName)
 	var id int
 	if exists {
 		err := s.db.DB.QueryRow("INSERT INTO schedule (name, scheduled_at, trainer_id) VALUES ($1,$2,$3) RETURNING id",
-			sch.Name, sch.ScheduledAt, trainerID).Scan(&id)
+			schedule.Name, schedule.ScheduledAt, trainerID).Scan(&id)
 		return id, err
 	}
 	ctx := context.Background()
@@ -57,12 +58,12 @@ func (s *ScheduleRepository) CreateSchedule(sch Schedule) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	id, err = trainer.CreateTrainer(sch.TrainerName, sch.TrainerPic)
+	id, err = trainer.CreateTrainer(schedule.TrainerName, schedule.TrainerPic)
 	if err != nil {
 		return 0, tx.Rollback()
 	}
 	err = s.db.DB.QueryRow("INSERT INTO schedule (name, scheduled_at, trainer_id) VALUES ($1,$2,$3) RETURNING id",
-		sch.Name, sch.ScheduledAt, trainerID).Scan(&id)
+		schedule.Name, schedule.ScheduledAt, trainerID).Scan(&id)
 	if err != nil {
 		return 0, tx.Rollback()
 	}

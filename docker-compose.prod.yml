@@ -24,6 +24,8 @@ services:
       context: .
     ports:
       - 18080:8080
+    volumes:
+      - ./ugc:/ugc
     environment:
       HOST: postgres
       DB_PORT: 5432
@@ -31,3 +33,4 @@ services:
       DB_USERNAME: usr_crossfit
       DB_PASSWORD: an29ahAv_r2k
       SSL_MODE: disable
+      STORAGE_PATH: /ugc

@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"sport/pkg/repository"
 	"sport/pkg/repository/wodRepo"
@@ -45,8 +46,14 @@ func AddWorkoutDaysInDB(workoutDays []ParsedWorkoutDay) error {
 	}
 	repos := repository.NewRepository(db)
 	for _, c := range workoutDays {
-		title, description, date := c.GetData()
-		workoutDay := wodRepo.WorkoutDay{Title: title, Description: description, ScheduledAt: date}
+		workoutDate, errorParseWorkoutDate := c.GetWorkoutDate()
+		if errorParseWorkoutDate != nil {
+			log.Println(errorParseWorkoutDate)
+			continue
+		}
+		workoutDay := wodRepo.WorkoutDay{Title: c.Title,
+			Description: c.Description,
+			ScheduledAt: workoutDate}
 		_, err = repos.CreateWorkoutDay(workoutDay)
 		if err != nil {
 			return errors.New("add workoutDays: " + err.Error())

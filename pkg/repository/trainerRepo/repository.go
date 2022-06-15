@@ -1,6 +1,9 @@
 package trainerRepo
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	imageUtils "sport/pkg/utils"
+)
 
 func NewTrainerRepository(db *sqlx.DB) *TrainerRepository {
 	return &TrainerRepository{db: db}
@@ -21,6 +24,17 @@ func (t *TrainerRepository) CreateTrainer(trainerName, trainerPic string) (int, 
 	if status, err := t.IsTrainerExists(trainerName); status || err != nil {
 		return 0, err
 	}
+
+	// если для тренера передана аватарка - пробуем изменить её размер
+	if trainerPic != "" {
+		err, thumbUrl := imageUtils.GetAvatarThumbUrl(trainerPic)
+		if err == nil {
+			trainerPic = imageUtils.GetStorageFullUrl() + thumbUrl
+		} else {
+			trainerPic = ""
+		}
+	}
+
 	var id int
 	err := t.db.DB.QueryRow("INSERT INTO trainer (name, avatar_url) VALUES ($1, $2) RETURNING id",
 		trainerName, trainerPic).Scan(&id)

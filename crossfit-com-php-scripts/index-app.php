@@ -58,6 +58,7 @@ foreach ($terms as $key => $term) {
         $wodDescription = preg_replace('#(<br\s?/>)+?</p>#isxu', '</p>', $wodDescription);
         $wodDescription = preg_replace('#<p><br\s?/>#isxu', '<p>', $wodDescription);
         $wodDescription = preg_replace("#<p>\s+</p>#isxu", '', $wodDescription);
+        $wodDescription = preg_replace("#^<p>(.*?)</p>$#isxu", '<span>$1</span>', $wodDescription);
 
         $title = get_the_title();
 
@@ -66,9 +67,7 @@ foreach ($terms as $key => $term) {
             'scheduledAt' => $term->name,
             'description' => $wodDescription,
             'origDescription' => $wodOrigDescription,
-
-
-];
+        ];
     }
 }
 
