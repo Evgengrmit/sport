@@ -31,7 +31,7 @@ func (h *Handler) Login(c *gin.Context) {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"user": result})
+	c.JSON(http.StatusCreated, gin.H{"code": result})
 }
 func (h *Handler) GetAllWorkoutDays(c *gin.Context) {
 	complexes, err := h.services.WorkoutDay.GetAllWorkoutDays()
@@ -96,6 +96,20 @@ func (h *Handler) AddExerciseResult(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "ok"})
 }
+
+
+func (h *Handler) Verify(c *gin.Context) {
+	var input authRepo.AuthorizationCode
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	result, err := h.services.AuthCode.VerifyCode(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": result})
 
 func (h *Handler) GetWorkoutResults(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
