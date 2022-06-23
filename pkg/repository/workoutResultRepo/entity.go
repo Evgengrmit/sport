@@ -4,7 +4,8 @@ import "github.com/jmoiron/sqlx"
 
 type WorkoutResult struct {
 	ID         int    `json:"id"`
-	UserId     int    `json:"userId"`
+	UserId     int    `json:"userId,omitempty"`
+	UserName   string `json:"userName,omitempty"`
 	WorkoutId  int    `json:"workoutId"`
 	Comment    string `json:"comment"`
 	CreatedAt  string `json:"createdAt,omitempty"`
@@ -14,6 +15,7 @@ type WorkoutResult struct {
 
 type WorkoutResultRepo interface {
 	CreateWorkoutResult(wod WorkoutResult) (WorkoutResult, error)
+	GetWorkoutResults(id int) ([]WorkoutResult, error)
 }
 
 type WorkoutResultRepository struct {

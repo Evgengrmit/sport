@@ -19,6 +19,12 @@
 Запись комплексов в БД:
 `go run cmd/complex/database/main.go --file=complexes.json`
 
+Скачивание расписания:
+`go run cmd/schedule/download/main.go --url=https://crossfit1905.com/app-schedules.php`
+
+Запись расписания в БД:
+`go run cmd/schedule/database/main.go --file=schedulesRepo.json`
+
 Запуск сервера
 ```
 $ source set_env.sh  
@@ -37,6 +43,5 @@ $ go run cmd/server/main.go
 
 Скачивание расписания:
 `docker-compose -f docker-compose.prod.yml exec backend go run cmd/schedule/download/main.go --url=https://crossfit1905.com/app-schedules.php`
-
 Запись расписания:
 `docker-compose -f docker-compose.prod.yml exec backend go run cmd/schedule/database/main.go --file=schedulesRepo.json`

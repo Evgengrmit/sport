@@ -1,14 +1,22 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	imageUtils "sport/pkg/utils"
+)
 
 func (h *Handler) InitRoutes() *gin.Engine {
+
 	router := gin.Default()
+
+	storageRootPath := imageUtils.GetStorageRootPath()
+	router.Static(imageUtils.GetStorageUrlPrefix(), storageRootPath)
 	login := router.Group("/login")
 	{
 		login.POST("/", h.Login)
 		login.POST("/verify", h.Verify)
 	}
+
 	wods := router.Group("/wod")
 	{
 		wods.GET("/", h.GetAllWorkoutDays)
@@ -17,6 +25,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	}
 	workout := router.Group("/workout")
 	{
+		workout.GET("/:id/result", h.GetWorkoutResults)
 		workout.POST("/result", h.AddWorkoutResult)
 	}
 	schedules := router.Group("/schedules")

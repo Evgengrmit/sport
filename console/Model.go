@@ -1,7 +1,6 @@
 package console
 
 import (
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -34,10 +33,11 @@ func (s *ParsedScheduleItem) GetTime() time.Time {
 		0, 0, time.FixedZone("Europe/Moscow", 3600*3)).UTC()
 }
 
-func (s *ParsedWorkoutDay) GetData() (string, string, time.Time) {
+func (s *ParsedWorkoutDay) GetWorkoutDate() (time.Time, error) {
 	date, err := time.Parse("02/01/06", s.ScheduledAt)
 	if err != nil {
-		log.Println(err.Error())
+		return date, err
 	}
-	return s.Title, s.Description, date
+	return time.Date(date.Year(), date.Month(), date.Day(), 0, 0,
+		0, 0, time.FixedZone("Europe/Moscow", 3600*3)).UTC(), nil
 }
